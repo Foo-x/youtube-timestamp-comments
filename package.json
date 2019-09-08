@@ -1,0 +1,41 @@
+{
+  "name": "youtube-timestamp-comments",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf dist/",
+    "build": "npm run clean && npm run build:pa && npm run build:bg && npm run build:cs && npm run cp:static",
+    "build:pa": "parcel build src/main.js -d dist/js/",
+    "build:bg": "parcel build src/background/background.js -d dist/js/background",
+    "build:cs": "parcel build src/content_scripts/contentScript.js -d dist/js/content_scripts",
+    "dev": "npm run clean && npm run dev:pa && npm run dev:bg && npm run dev:cs && npm run cp:static",
+    "dev:pa": "NODE_ENV=development parcel build src/main.js -d dist/js/ --no-minify",
+    "dev:bg": "NODE_ENV=development parcel build src/background/background.js -d dist/js/background --no-minify",
+    "dev:cs": "NODE_ENV=development parcel build src/content_scripts/contentScript.js -d dist/js/content_scripts --no-minify",
+    "cp:static": "cp -r static/* dist/",
+    "watch": "nodemon"
+  },
+  "nodemonConfig": {
+    "ext": "html,css,js,json,elm",
+    "exec": "yarn dev",
+    "watch": [
+      "src",
+      "static"
+    ]
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.10.1",
+    "@types/chrome": "^0.0.86",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "bulma": "^0.7.5",
+    "bulma-divider": "^0.2.0",
+    "elm-hot": "^1.1.0",
+    "node-elm-compiler": "^5.0.3",
+    "nodemon": "^1.19.1",
+    "parcel-bundler": "^1.12.3"
+  },
+  "browserslist": [
+    "last 1 Chrome version"
+  ]
+}

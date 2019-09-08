@@ -1,0 +1,44 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.navbar {
+  min-height: initial;
+  z-index: initial;
+}
+
+.navbar-menu {
+  padding: 0 .25rem;
+  box-shadow: none;
+}
+
+.navbar-item {
+  display: inline-flex;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.progress {
+  height: 2px;
+  border-radius: 0px;
+}
+
+.progress-stopped {
+  height: 2px;
+  background-color: rgba(65, 65, 65, 0.1);
+}
+
+.content {
+  padding-top: 42px;
+}
+
+.disabled {
+  opacity: .5;
+  pointer-events: none;
+}

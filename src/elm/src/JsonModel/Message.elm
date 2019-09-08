@@ -1,0 +1,61 @@
+module JsonModel.Message exposing (Incoming(..), decode)
+
+import Dict
+import Json.Decode as D exposing (Decoder, Error)
+import Json.Decode.Pipeline as DP
+import JsonModel.Second2Comments as S2C exposing (Second2Comments)
+
+
+type Incoming
+    = Page Second2Comments Int
+    | Complete HasNext
+    | MaxCount Int
+    | IsReady
+
+
+type alias HasNext =
+    Bool
+
+
+decode : D.Value -> Result Error Incoming
+decode value =
+    D.decodeValue decoder value
+
+
+atData : Decoder a -> Decoder a
+atData d =
+    D.field "data" d
+
+
+decoder : Decoder Incoming
+decoder =
+    D.field "type" D.string
+        |> D.andThen incomingDecoder
+
+
+incomingDecoder : String -> Decoder Incoming
+incomingDecoder typeStr =
+    case typeStr of
+        "page" ->
+            atData
+                (D.succeed
+                    Page
+                    |> DP.required "page" S2C.decoder
+                    |> DP.required "fetchedCount" D.int
+                )
+
+        "complete" ->
+            atData
+                (D.succeed Complete
+                    |> DP.required "hasNext" D.bool
+                )
+
+        "max-count" ->
+            D.succeed MaxCount
+                |> DP.required "data" D.int
+
+        "is-ready" ->
+            D.succeed IsReady
+
+        _ ->
+            D.fail "Undefined type"
