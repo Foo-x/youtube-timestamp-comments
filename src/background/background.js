@@ -31,6 +31,7 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
   if (change.status === "complete") {
     chrome.tabs.sendMessage(tabId, {
       type: "load-continuation",
+      tabId,
       data: url.searchParams.get("v")
     });
   }

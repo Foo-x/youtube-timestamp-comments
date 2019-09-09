@@ -6,8 +6,14 @@ const onCurrentTab = f => {
 
 // ports
 
+let tabId;
+
 const onMessage = app => {
   chrome.runtime.onMessage.addListener(message => {
+    if (message.tabId !== tabId) {
+      return;
+    }
+
     app.ports.sendMessageResponse.send(message);
   });
 };
@@ -15,7 +21,7 @@ const onMessage = app => {
 const sendMessage = app => {
   app.ports.sendMessage.subscribe(data => {
     onCurrentTab(tab => {
-      chrome.tabs.sendMessage(tab.id, data);
+      chrome.tabs.sendMessage(tab.id, { ...data, tabId: tab.id });
     });
   });
 };
@@ -30,4 +36,7 @@ const updateTime = app => {
 
 export const register = app => {
   [onMessage, sendMessage, updateTime].forEach(f => f(app));
+  onCurrentTab(tab => {
+    tabId = tab.id;
+  });
 };

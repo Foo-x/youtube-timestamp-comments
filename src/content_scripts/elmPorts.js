@@ -1,7 +1,16 @@
 import { fetchInitialConfig } from "./configApi";
 
+let tabId;
+
 const onMessage = app => {
   chrome.runtime.onMessage.addListener(message => {
+    if (tabId === undefined && message.tabId !== undefined) {
+      tabId = message.tabId;
+    }
+    if (tabId !== message.tabId) {
+      return true;
+    }
+
     if (message.type === "load-continuation") {
       fetchInitialConfig().then(setUpYouTubeConfig(app, message.data));
       return true;
@@ -14,7 +23,7 @@ const onMessage = app => {
 
 const sendResponse = app => {
   app.ports.sendResponse.subscribe(response => {
-    chrome.runtime.sendMessage(response);
+    chrome.runtime.sendMessage({ ...response, tabId });
   });
 };
 
