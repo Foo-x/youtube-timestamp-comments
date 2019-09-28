@@ -4,17 +4,16 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist/",
-    "build": "npm run clean && npm run build:pa && npm run build:bg && npm run build:cs && npm run cp:static",
-    "build:pa": "parcel build src/main.js -d dist/js/",
-    "build:bg": "parcel build src/background/background.js -d dist/js/background",
-    "build:cs": "parcel build src/content_scripts/contentScript.js -d dist/js/content_scripts",
+    "static": "mkdir dist && cp -r static/* dist/",
+    "build": "npm run clean && npm run static && npm run build:js",
+    "build:js": "$npm_package_config_build --no-source-maps",
+    "dev": "npm run clean && npm run static && npm run dev:js",
+    "dev:js": "NODE_ENV=development $npm_package_config_build --no-minify",
     "archive": "npm run build && cd dist && zip youtube-timestamp-comments * -r",
-    "dev": "npm run clean && npm run dev:pa && npm run dev:bg && npm run dev:cs && npm run cp:static",
-    "dev:pa": "NODE_ENV=development parcel build src/main.js -d dist/js/ --no-minify",
-    "dev:bg": "NODE_ENV=development parcel build src/background/background.js -d dist/js/background --no-minify",
-    "dev:cs": "NODE_ENV=development parcel build src/content_scripts/contentScript.js -d dist/js/content_scripts --no-minify",
-    "cp:static": "cp -r static/* dist/",
     "watch": "nodemon"
+  },
+  "config": {
+    "build": "parcel build src/main.js src/background/background.js src/content_scripts/contentScript.js -d dist/js"
   },
   "nodemonConfig": {
     "ext": "html,css,js,json,elm",
