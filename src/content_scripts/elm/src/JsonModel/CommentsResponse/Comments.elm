@@ -8,7 +8,7 @@ module JsonModel.CommentsResponse.Comments exposing
 
 import Common.Error as Error exposing (Error)
 import Json.Decode as D exposing (Decoder, Value)
-import JsonModel.CommentsResponse.Common exposing (Continuation, Count, Texts)
+import JsonModel.CommentsResponse.Common exposing (Continuation, MaxCount, Texts)
 import Maybe.Extra as MaybeEx
 
 
@@ -53,13 +53,13 @@ commentTextsDecoder =
 -- for maxCount
 
 
-decodeMaxCount : Value -> Result Error Count
+decodeMaxCount : Value -> Result Error MaxCount
 decodeMaxCount value =
     D.decodeValue maxCountDecoder value
         |> Result.mapError Error.decodeError
 
 
-maxCountDecoder : Decoder Count
+maxCountDecoder : Decoder MaxCount
 maxCountDecoder =
     (D.at [ "response", "continuationContents", "itemSectionContinuation", "header", "commentsHeaderRenderer", "countText", "runs" ] <| D.index 0 <| D.field "text" D.string)
         |> D.map String.words
