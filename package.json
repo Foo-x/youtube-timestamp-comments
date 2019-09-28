@@ -18,7 +18,7 @@
   },
   "nodemonConfig": {
     "ext": "html,css,js,json,elm",
-    "exec": "yarn dev",
+    "exec": "npm run dev",
     "watch": [
       "src",
       "static"
