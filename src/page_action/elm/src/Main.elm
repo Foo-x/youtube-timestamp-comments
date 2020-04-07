@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
 import JsonModel.Message as Message exposing (Incoming)
-import JsonModel.Second2Comments as S2C exposing (Second2Comments, Seconds)
+import JsonModel.Second2Comments exposing (Hours, Minutes, Second2Comments, Seconds)
 import Ports.Chrome.Tabs as Tabs
 import Process
 import Regex exposing (Regex)
@@ -42,7 +42,7 @@ init _ =
 
 timestampRegex : Regex
 timestampRegex =
-    Regex.fromString "\\d+:\\d{2}" |> Maybe.withDefault Regex.never
+    Regex.fromString "(?:\\d{1,2}:)?\\d{1,2}:\\d{2}" |> Maybe.withDefault Regex.never
 
 
 
@@ -276,38 +276,72 @@ toTimeLink seconds =
 
 toTimeStr : Seconds -> String
 toTimeStr seconds =
-    let
-        minute =
-            seconds
-                // 60
-                |> String.fromInt
+    if seconds >= 3600 then
+        let
+            hours =
+                seconds
+                    // 3600
+                    |> String.fromInt
 
-        actualSecond =
-            modBy 60 seconds
-                |> String.fromInt
-                |> String.padLeft 2 '0'
-    in
-    [ minute, actualSecond ]
-        |> String.join ":"
+            minutes =
+                seconds
+                    |> modBy 3600
+                    |> (\x -> x // 60)
+                    |> String.fromInt
+                    |> String.padLeft 2 '0'
+
+            actualSecond =
+                seconds
+                    |> modBy 60
+                    |> String.fromInt
+                    |> String.padLeft 2 '0'
+        in
+        [ hours, minutes, actualSecond ]
+            |> String.join ":"
+
+    else
+        let
+            minutes =
+                seconds
+                    // 60
+                    |> String.fromInt
+
+            actualSecond =
+                seconds
+                    |> modBy 60
+                    |> String.fromInt
+                    |> String.padLeft 2 '0'
+        in
+        [ minutes, actualSecond ]
+            |> String.join ":"
 
 
 timestampToSeconds : String -> Seconds
 timestampToSeconds timestamp =
     case String.split ":" timestamp of
-        minute :: seconds :: _ ->
-            let
-                minuteInt =
-                    String.toInt minute
-                        |> Maybe.withDefault 0
+        hours :: minutes :: seconds :: _ ->
+            Maybe.map3
+                hmsToSeconds
+                (String.toInt hours)
+                (String.toInt minutes)
+                (String.toInt seconds)
+                |> Maybe.withDefault 0
 
-                secondInt =
-                    String.toInt seconds
-                        |> Maybe.withDefault 0
-            in
-            minuteInt * 60 + secondInt
+        minutes :: seconds :: _ ->
+            Maybe.map3
+                hmsToSeconds
+                (Just 0)
+                (String.toInt minutes)
+                (String.toInt seconds)
+                |> Maybe.withDefault 0
 
         _ ->
             0
+
+
+hmsToSeconds : Hours -> Minutes -> Seconds -> Seconds
+hmsToSeconds hours minutes seconds =
+    hours * 3600 + minutes * 60 + seconds
 
 
 

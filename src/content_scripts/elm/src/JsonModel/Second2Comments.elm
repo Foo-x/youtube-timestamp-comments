@@ -10,13 +10,21 @@ type alias Second2Comments =
     Dict Seconds Texts
 
 
+type alias Hours =
+    Int
+
+
+type alias Minutes =
+    Int
+
+
 type alias Seconds =
     Int
 
 
 timestampRegex : Regex
 timestampRegex =
-    Regex.fromString "\\d+:\\d{2}" |> Maybe.withDefault Regex.never
+    Regex.fromString "(?:\\d{1,2}:)?\\d{1,2}:\\d{2}" |> Maybe.withDefault Regex.never
 
 
 encode : Second2Comments -> E.Value
@@ -53,17 +61,26 @@ mergeSecond2Comments s2c1 s2c2 =
 timestampToSeconds : String -> Seconds
 timestampToSeconds timestamp =
     case String.split ":" timestamp of
-        minute :: seconds :: _ ->
-            let
-                minuteInt =
-                    String.toInt minute
-                        |> Maybe.withDefault 0
+        hours :: minutes :: seconds :: _ ->
+            Maybe.map3
+                hmsToSeconds
+                (String.toInt hours)
+                (String.toInt minutes)
+                (String.toInt seconds)
+                |> Maybe.withDefault 0
 
-                secondInt =
-                    String.toInt seconds
-                        |> Maybe.withDefault 0
-            in
-            minuteInt * 60 + secondInt
+        minutes :: seconds :: _ ->
+            Maybe.map3
+                hmsToSeconds
+                (Just 0)
+                (String.toInt minutes)
+                (String.toInt seconds)
+                |> Maybe.withDefault 0
 
         _ ->
             0
+
+
+hmsToSeconds : Hours -> Minutes -> Seconds -> Seconds
+hmsToSeconds hours minutes seconds =
+    hours * 3600 + minutes * 60 + seconds

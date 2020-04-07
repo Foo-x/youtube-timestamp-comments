@@ -1,4 +1,4 @@
-module JsonModel.Second2Comments exposing (Second2Comments, Seconds, decoder, mergeSecond2Comments)
+module JsonModel.Second2Comments exposing (Hours, Minutes, Second2Comments, Seconds, decoder, mergeSecond2Comments)
 
 import Dict exposing (Dict)
 import Dict.Extra as DictEx
@@ -13,6 +13,14 @@ type alias Second2CommentsRecord =
     { seconds : Seconds
     , comments : List String
     }
+
+
+type alias Hours =
+    Int
+
+
+type alias Minutes =
+    Int
 
 
 type alias Seconds =
