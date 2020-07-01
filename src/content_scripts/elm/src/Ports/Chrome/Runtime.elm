@@ -1,7 +1,8 @@
-port module Ports.Chrome.Runtime exposing (HasNext, onMessage, sendComplete, sendIsReady, sendMaxCount, sendPage)
+port module Ports.Chrome.Runtime exposing (HasNext, onMessage, sendComplete, sendIsReady, sendMaxCount, sendPage, sendScroll)
 
 import Json.Encode as E exposing (Value)
 import JsonModel.CommentsResponse.Common exposing (MaxCount)
+import JsonModel.Message as M
 import JsonModel.Second2Comments as S2C exposing (Second2Comments)
 
 
@@ -10,6 +11,7 @@ type Outgoing
     | Complete HasNext
     | MaxCount MaxCount
     | IsReady
+    | Scroll M.Scroll
 
 
 type alias HasNext =
@@ -40,6 +42,13 @@ sendMaxCount count =
 sendIsReady : Cmd msg
 sendIsReady =
     IsReady
+        |> encode
+        |> sendResponse
+
+
+sendScroll : M.Scroll -> Cmd msg
+sendScroll scroll =
+    Scroll scroll
         |> encode
         |> sendResponse
 
@@ -77,6 +86,12 @@ encode outgoing =
         IsReady ->
             E.object
                 [ ( "type", E.string "is-ready" ) ]
+
+        Scroll scroll ->
+            E.object
+                [ ( "type", E.string "scroll" )
+                , ( "data", E.float scroll )
+                ]
 
 
 

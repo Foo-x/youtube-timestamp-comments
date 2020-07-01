@@ -1,4 +1,4 @@
-port module Ports.Chrome.Tabs exposing (sendCacheMessage, sendMessageResponse, sendNextPageMessage, updateTime)
+port module Ports.Chrome.Tabs exposing (sendCacheMessage, sendMessageResponse, sendNextPageMessage, sendSaveScrollMessage, updateTime)
 
 import Json.Encode as E exposing (Value)
 
@@ -6,6 +6,7 @@ import Json.Encode as E exposing (Value)
 type SendMessageType
     = NextPage
     | Cache
+    | SaveScroll Float
 
 
 sendNextPageMessage : Cmd msg
@@ -18,6 +19,11 @@ sendCacheMessage =
     sendMessage <| toSendMessageValue Cache
 
 
+sendSaveScrollMessage : Float -> Cmd msg
+sendSaveScrollMessage scroll =
+    sendMessage <| toSendMessageValue (SaveScroll scroll)
+
+
 toSendMessageValue : SendMessageType -> Value
 toSendMessageValue sendMessageType =
     case sendMessageType of
@@ -26,6 +32,12 @@ toSendMessageValue sendMessageType =
 
         Cache ->
             E.object [ ( "type", E.string "cache" ) ]
+
+        SaveScroll scroll ->
+            E.object
+                [ ( "type", E.string "save-scroll" )
+                , ( "data", E.float scroll )
+                ]
 
 
 

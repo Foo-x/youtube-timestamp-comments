@@ -1,15 +1,15 @@
 module Main exposing (main)
 
 import Browser
-import Dict exposing (Dict)
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
 import JsonModel.Message as Message exposing (Incoming)
 import JsonModel.Second2Comments exposing (Hours, Minutes, Second2Comments, Seconds)
+import Ports.Browser.Events as BE
 import Ports.Chrome.Tabs as Tabs
-import Process
 import Regex exposing (Regex)
 import Task
 
@@ -56,6 +56,7 @@ type Msg
     | NextPage
     | NextThreePages
     | ReceiveMessage D.Value
+    | SaveScroll Float
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -80,6 +81,9 @@ update msg model =
             Message.decode value
                 |> Result.map (receiveMessage model)
                 |> Result.withDefault ( model, Cmd.none )
+
+        SaveScroll scrollValue ->
+            ( model, Tabs.sendSaveScrollMessage scrollValue )
 
 
 receiveMessage : Model -> Incoming -> ( Model, Cmd Msg )
@@ -117,6 +121,9 @@ receiveMessage model incoming =
         Message.IsReady ->
             ( { model | remainingPages = 1 }, Tabs.sendCacheMessage )
 
+        Message.Scroll scrollValue ->
+            ( model, BE.scroll scrollValue )
+
 
 
 -- SUBSCRIPTIONS
@@ -125,7 +132,7 @@ receiveMessage model incoming =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ Tabs.sendMessageResponse ReceiveMessage ]
+        [ Tabs.sendMessageResponse ReceiveMessage, BE.onScroll SaveScroll ]
 
 
 
