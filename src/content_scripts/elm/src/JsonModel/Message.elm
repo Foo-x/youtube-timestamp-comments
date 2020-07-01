@@ -1,7 +1,12 @@
-module JsonModel.Message exposing (Incoming(..), decode)
+module JsonModel.Message exposing (Incoming(..), Scroll, decode)
 
 import Common.Error as Error exposing (Error)
 import Json.Decode as D exposing (Decoder, Value)
+import Json.Decode.Pipeline as DP
+
+
+type alias Scroll =
+    Float
 
 
 type Incoming
@@ -9,6 +14,7 @@ type Incoming
     | Initialize
     | NextPage
     | Cache
+    | SaveScroll Scroll
 
 
 decode : Value -> Result Error Incoming
@@ -34,6 +40,10 @@ incomingDecoder typeStr =
 
         "next-page" ->
             D.succeed NextPage
+
+        "save-scroll" ->
+            D.succeed SaveScroll
+                |> DP.required "data" D.float
 
         _ ->
             D.succeed Undefined

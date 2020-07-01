@@ -1,6 +1,5 @@
 module JsonModel.Message exposing (Incoming(..), decode)
 
-import Dict
 import Json.Decode as D exposing (Decoder, Error)
 import Json.Decode.Pipeline as DP
 import JsonModel.Second2Comments as S2C exposing (Second2Comments)
@@ -11,6 +10,7 @@ type Incoming
     | Complete HasNext
     | MaxCount Int
     | IsReady
+    | Scroll Float
 
 
 type alias HasNext =
@@ -56,6 +56,10 @@ incomingDecoder typeStr =
 
         "is-ready" ->
             D.succeed IsReady
+
+        "scroll" ->
+            D.succeed Scroll
+                |> DP.required "data" D.float
 
         _ ->
             D.fail "Undefined type"
