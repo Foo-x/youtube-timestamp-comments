@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
 import JsonModel.Message as Message exposing (Incoming)
-import JsonModel.Second2Comments exposing (Hours, Minutes, Second2Comments, Seconds)
+import JsonModel.Second2Comments as S2C exposing (Hours, Minutes, Second2Comments, Seconds)
 import Ports.Browser.Events as BE
 import Ports.Chrome.Tabs as Tabs
 import Regex exposing (Regex)
@@ -22,9 +22,15 @@ type alias Model =
     { sec2Comments : Second2Comments
     , fetchedCount : Int
     , maxCount : Int
+    , selectedSeconds : SelectedSeconds
     , remainingPages : Int
     , hasNext : Bool
     }
+
+
+type SelectedSeconds
+    = All
+    | Unit Int
 
 
 init : () -> ( Model, Cmd Msg )
@@ -32,6 +38,7 @@ init _ =
     ( { sec2Comments = Dict.empty
       , fetchedCount = 0
       , maxCount = 0
+      , selectedSeconds = All
       , remainingPages = 0
       , hasNext = False
       }
@@ -56,6 +63,7 @@ type Msg
     | NextPage
     | NextThreePages
     | ReceiveMessage D.Value
+    | ChangeSelectedSeconds SelectedSeconds
     | SaveScroll Float
 
 
@@ -81,6 +89,9 @@ update msg model =
             Message.decode value
                 |> Result.map (receiveMessage model)
                 |> Result.withDefault ( model, Cmd.none )
+
+        ChangeSelectedSeconds selectedSeconds ->
+            ( { model | selectedSeconds = selectedSeconds }, Cmd.none )
 
         SaveScroll scrollValue ->
             ( model, Tabs.sendSaveScrollMessage scrollValue )
@@ -141,14 +152,26 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
+    let
+        pageActionClass =
+            if Dict.size model.sec2Comments /= 0 then
+                "page-action-with-comments"
+
+            else
+                "page-action-without-comments"
+    in
     div
-        []
+        [ class pageActionClass ]
         [ div
             [ class "header" ]
             [ navbar model
             , progress model
             ]
-        , content model
+        , div
+            [ class "columns is-mobile is-gapless content-container" ]
+            [ sideMenu model
+            , content model
+            ]
         ]
 
 
@@ -218,13 +241,93 @@ progress { remainingPages } =
             ]
 
 
+sideMenu : Model -> Html Msg
+sideMenu { sec2Comments, selectedSeconds } =
+    let
+        menuList =
+            if Dict.size sec2Comments == 0 then
+                []
+
+            else
+                allElement selectedSeconds
+                    :: (Dict.keys sec2Comments
+                            |> List.map (secondsElement selectedSeconds)
+                       )
+    in
+    aside
+        [ class "menu column is-4" ]
+        [ ul
+            [ class "menu-list side-menu-list" ]
+            menuList
+        ]
+
+
+allElement : SelectedSeconds -> Html Msg
+allElement selectedSeconds =
+    let
+        isActiveStr =
+            case selectedSeconds of
+                All ->
+                    "is-active"
+
+                Unit _ ->
+                    ""
+    in
+    li
+        []
+        [ a
+            [ class isActiveStr
+            , onClick <| ChangeSelectedSeconds All
+            ]
+            [ text "ALL" ]
+        ]
+
+
+secondsElement : SelectedSeconds -> Seconds -> Html Msg
+secondsElement selectedSeconds seconds =
+    let
+        isActiveStr =
+            case selectedSeconds of
+                All ->
+                    ""
+
+                Unit actualSeconds ->
+                    if actualSeconds == seconds then
+                        "is-active"
+
+                    else
+                        ""
+    in
+    li
+        []
+        [ a
+            [ class isActiveStr
+            , onClick <| ChangeSelectedSeconds (Unit seconds)
+            ]
+            [ text <| toTimeStr seconds ]
+        ]
+
+
 content : Model -> Html Msg
-content { sec2Comments } =
+content { sec2Comments, selectedSeconds } =
+    let
+        cards =
+            case selectedSeconds of
+                All ->
+                    S2C.uniqueComments sec2Comments
+                        |> Dict.toList
+                        |> List.map toCommentCards
+
+                Unit seconds ->
+                    [ ( seconds
+                      , Dict.get seconds sec2Comments |> Maybe.withDefault []
+                      )
+                    ]
+                        |> List.map toCommentCards
+    in
     div
-        [ class "content" ]
-        (Dict.toList sec2Comments
-            |> List.map toCommentCards
-        )
+        [ class "column" ]
+        cards
 
 
 toCommentCards : ( Seconds, List String ) -> Html Msg

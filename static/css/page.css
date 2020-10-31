@@ -1,3 +1,7 @@
+.page-action-with-comments {
+  height: 600px;
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -34,8 +38,21 @@
   background-color: rgba(65, 65, 65, 0.1);
 }
 
-.content {
-  padding-top: 42px;
+.side-menu-list {
+  position: fixed;
+  top: 42px;
+  overflow-y: scroll;
+  width: 33.33333%;
+  height: calc(100% - 42px);
+  border-right: 1px solid hsl(0, 0%, 90%);
+}
+
+.side-menu-list::-webkit-scrollbar {
+  display: none;
+}
+
+.content-container {
+  padding-top: 42px !important;
 }
 
 .disabled {

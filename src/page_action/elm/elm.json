@@ -12,7 +12,8 @@
             "elm/html": "1.0.0",
             "elm/json": "1.1.3",
             "elm/regex": "1.0.0",
-            "elm-community/dict-extra": "2.4.0"
+            "elm-community/dict-extra": "2.4.0",
+            "elm-community/list-extra": "8.2.4"
         },
         "indirect": {
             "elm/time": "1.0.0",
