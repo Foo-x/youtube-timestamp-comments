@@ -8,7 +8,7 @@ import JsonModel.CommentsResponse.Comments as CommentsJson exposing (Comments)
 import JsonModel.CommentsResponse.Common exposing (Continuation, FetchedCount, Itct, MaxCount)
 import JsonModel.CommentsResponse.Page as PageJson
 import JsonModel.CommentsResponse.Replies as RepliesJson exposing (Replies)
-import JsonModel.Message as Message exposing (Incoming, Scroll)
+import JsonModel.Message as Message exposing (Incoming, ViewProps)
 import JsonModel.Second2Comments as S2C exposing (Second2Comments)
 import JsonModel.YouTubeConfig as YouTubeConfig exposing (YouTubeConfig)
 import Maybe.Extra as MaybeEx
@@ -25,8 +25,8 @@ type Model
     = Initial
     | YtConfigLoaded YouTubeConfig
     | FirstContinuationLoaded YouTubeConfig Continuation Itct
-    | PageLoaded Continuation LoadedModel Scroll
-    | LastPageLoaded LoadedModel Scroll
+    | PageLoaded Continuation LoadedModel ViewProps
+    | LastPageLoaded LoadedModel ViewProps
 
 
 type alias LoadedModel =
@@ -50,7 +50,7 @@ init _ =
 
 type Msg
     = OnMessage D.Value
-    | SendFirstPage (Result Error Comments)
+    | SendFirstPage ViewProps (Result Error Comments)
     | SendNextPage (Result Error Comments)
     | SendReplies (Result Error Replies)
     | SetUpYouTubeConfig D.Value
@@ -65,7 +65,7 @@ update msg model =
                 |> Result.map (handleMessage model)
                 |> Result.withDefault ( model, Cmd.none )
 
-        ( SendFirstPage result, FirstContinuationLoaded ytConfig _ itct ) ->
+        ( SendFirstPage viewProps result, FirstContinuationLoaded ytConfig _ itct ) ->
             let
                 maxCount =
                     result
@@ -75,19 +75,19 @@ update msg model =
                 maxCountCmd =
                     Runtime.sendMaxCount maxCount
             in
-            sendPage result (LoadedModel Dict.empty 0 maxCount ytConfig itct 0) 0
+            sendPage result (LoadedModel Dict.empty 0 maxCount ytConfig itct 0) viewProps
                 |> addCmd maxCountCmd
 
-        ( SendNextPage result, PageLoaded _ props scroll ) ->
-            sendPage result props scroll
+        ( SendNextPage result, PageLoaded _ props viewProps ) ->
+            sendPage result props viewProps
 
-        ( SendReplies result, PageLoaded nextContinuation props scroll ) ->
+        ( SendReplies result, PageLoaded nextContinuation props viewProps ) ->
             sendReplies result props True
-                |> (\( loadedModel, cmd ) -> ( PageLoaded nextContinuation loadedModel scroll, cmd ))
+                |> (\( loadedModel, cmd ) -> ( PageLoaded nextContinuation loadedModel viewProps, cmd ))
 
-        ( SendReplies result, LastPageLoaded props scroll ) ->
+        ( SendReplies result, LastPageLoaded props viewProps ) ->
             sendReplies result props False
-                |> (\( loadedModel, cmd ) -> ( LastPageLoaded loadedModel scroll, cmd ))
+                |> (\( loadedModel, cmd ) -> ( LastPageLoaded loadedModel viewProps, cmd ))
 
         ( SetUpYouTubeConfig ytConfig, _ ) ->
             YouTubeConfig.decode ytConfig
@@ -123,28 +123,28 @@ handleMessage model incoming =
         ( Message.Initialize, _ ) ->
             ( Initial, Cmd.none )
 
-        ( Message.Cache, FirstContinuationLoaded ytConfig continuation itct ) ->
+        ( Message.Cache viewProps, FirstContinuationLoaded ytConfig continuation itct ) ->
             YouTubeApi.fetchComments continuation itct ytConfig
-                |> Task.attempt SendFirstPage
+                |> Task.attempt (SendFirstPage viewProps)
                 |> Tuple.pair model
 
-        ( Message.Cache, PageLoaded _ props scroll ) ->
+        ( Message.Cache _, PageLoaded _ props viewProps ) ->
             let
                 cmds =
                     [ Runtime.sendMaxCount props.maxCount
                     , Runtime.sendPage props.second2Comments props.fetchedCount
-                    , Runtime.sendScroll scroll
+                    , Runtime.sendViewProps viewProps
                     , Runtime.sendComplete True
                     ]
             in
             ( model, Cmd.batch cmds )
 
-        ( Message.Cache, LastPageLoaded props scroll ) ->
+        ( Message.Cache _, LastPageLoaded props viewProps ) ->
             let
                 cmds =
                     [ Runtime.sendMaxCount props.maxCount
                     , Runtime.sendPage props.second2Comments props.fetchedCount
-                    , Runtime.sendScroll scroll
+                    , Runtime.sendViewProps viewProps
                     , Runtime.sendComplete False
                     ]
             in
@@ -155,18 +155,18 @@ handleMessage model incoming =
                 |> Task.attempt SendNextPage
                 |> Tuple.pair model
 
-        ( Message.SaveScroll scroll, PageLoaded continuation props _ ) ->
-            ( PageLoaded continuation props scroll, Cmd.none )
+        ( Message.SaveViewProps viewProps, PageLoaded continuation props _ ) ->
+            ( PageLoaded continuation props viewProps, Cmd.none )
 
-        ( Message.SaveScroll scroll, LastPageLoaded props _ ) ->
-            ( LastPageLoaded props scroll, Cmd.none )
+        ( Message.SaveViewProps viewProps, LastPageLoaded props _ ) ->
+            ( LastPageLoaded props viewProps, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
 
 
-sendPage : Result Error Comments -> LoadedModel -> Scroll -> ( Model, Cmd Msg )
-sendPage result { second2Comments, maxCount, fetchedCount, ytConfig, itct } scroll =
+sendPage : Result Error Comments -> LoadedModel -> ViewProps -> ( Model, Cmd Msg )
+sendPage result { second2Comments, maxCount, fetchedCount, ytConfig, itct } viewProps =
     let
         textsResult =
             result
@@ -222,10 +222,10 @@ sendPage result { second2Comments, maxCount, fetchedCount, ytConfig, itct } scro
         nextModel =
             case nextContinuation of
                 Just continuation ->
-                    PageLoaded continuation loadedModel scroll
+                    PageLoaded continuation loadedModel viewProps
 
                 Nothing ->
-                    LastPageLoaded loadedModel scroll
+                    LastPageLoaded loadedModel viewProps
     in
     ( nextModel
     , Cmd.batch <| [ pageCmd ] ++ sendReplyCmds

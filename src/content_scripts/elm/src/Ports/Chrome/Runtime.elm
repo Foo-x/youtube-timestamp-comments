@@ -1,4 +1,4 @@
-port module Ports.Chrome.Runtime exposing (HasNext, onMessage, sendComplete, sendIsReady, sendMaxCount, sendPage, sendScroll)
+port module Ports.Chrome.Runtime exposing (HasNext, onMessage, sendComplete, sendIsReady, sendMaxCount, sendPage, sendViewProps)
 
 import Json.Encode as E exposing (Value)
 import JsonModel.CommentsResponse.Common exposing (MaxCount)
@@ -11,7 +11,7 @@ type Outgoing
     | Complete HasNext
     | MaxCount MaxCount
     | IsReady
-    | Scroll M.Scroll
+    | ViewProps M.ViewProps
 
 
 type alias HasNext =
@@ -46,9 +46,9 @@ sendIsReady =
         |> sendResponse
 
 
-sendScroll : M.Scroll -> Cmd msg
-sendScroll scroll =
-    Scroll scroll
+sendViewProps : M.ViewProps -> Cmd msg
+sendViewProps viewProps =
+    ViewProps viewProps
         |> encode
         |> sendResponse
 
@@ -87,10 +87,16 @@ encode outgoing =
             E.object
                 [ ( "type", E.string "is-ready" ) ]
 
-        Scroll scroll ->
+        ViewProps viewProps ->
             E.object
-                [ ( "type", E.string "scroll" )
-                , ( "data", E.float scroll )
+                [ ( "type", E.string "view-props" )
+                , ( "data"
+                  , E.object
+                        [ ( "scroll", E.float viewProps.scroll )
+                        , ( "sideMenuScroll", E.float viewProps.sideMenuScroll )
+                        , ( "selectedSeconds", E.string viewProps.selectedSeconds )
+                        ]
+                  )
                 ]
 
 

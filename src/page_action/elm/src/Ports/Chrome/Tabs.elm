@@ -1,12 +1,13 @@
-port module Ports.Chrome.Tabs exposing (sendCacheMessage, sendMessageResponse, sendNextPageMessage, sendSaveScrollMessage, updateTime)
+port module Ports.Chrome.Tabs exposing (sendCacheMessage, sendMessageResponse, sendNextPageMessage, sendSaveViewPropsMessage, updateTime)
 
 import Json.Encode as E exposing (Value)
+import JsonModel.Message exposing (ViewPropsValue)
 
 
 type SendMessageType
     = NextPage
-    | Cache
-    | SaveScroll Float
+    | Cache ViewPropsValue
+    | SaveViewProps ViewPropsValue
 
 
 sendNextPageMessage : Cmd msg
@@ -14,14 +15,14 @@ sendNextPageMessage =
     sendMessage <| toSendMessageValue NextPage
 
 
-sendCacheMessage : Cmd msg
-sendCacheMessage =
-    sendMessage <| toSendMessageValue Cache
+sendCacheMessage : ViewPropsValue -> Cmd msg
+sendCacheMessage viewPropsValue =
+    sendMessage <| toSendMessageValue (Cache viewPropsValue)
 
 
-sendSaveScrollMessage : Float -> Cmd msg
-sendSaveScrollMessage scroll =
-    sendMessage <| toSendMessageValue (SaveScroll scroll)
+sendSaveViewPropsMessage : ViewPropsValue -> Cmd msg
+sendSaveViewPropsMessage viewPropsValue =
+    sendMessage <| toSendMessageValue (SaveViewProps viewPropsValue)
 
 
 toSendMessageValue : SendMessageType -> Value
@@ -30,13 +31,28 @@ toSendMessageValue sendMessageType =
         NextPage ->
             E.object [ ( "type", E.string "next-page" ) ]
 
-        Cache ->
-            E.object [ ( "type", E.string "cache" ) ]
-
-        SaveScroll scroll ->
+        Cache viewPropsValue ->
             E.object
-                [ ( "type", E.string "save-scroll" )
-                , ( "data", E.float scroll )
+                [ ( "type", E.string "cache" )
+                , ( "data"
+                  , E.object
+                        [ ( "scroll", E.float viewPropsValue.scroll )
+                        , ( "sideMenuScroll", E.float viewPropsValue.sideMenuScroll )
+                        , ( "selectedSeconds", E.string viewPropsValue.selectedSeconds )
+                        ]
+                  )
+                ]
+
+        SaveViewProps viewPropsValue ->
+            E.object
+                [ ( "type", E.string "save-view-props" )
+                , ( "data"
+                  , E.object
+                        [ ( "scroll", E.float viewPropsValue.scroll )
+                        , ( "sideMenuScroll", E.float viewPropsValue.sideMenuScroll )
+                        , ( "selectedSeconds", E.string viewPropsValue.selectedSeconds )
+                        ]
+                  )
                 ]
 
 
