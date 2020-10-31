@@ -1,4 +1,4 @@
-module JsonModel.Message exposing (Incoming(..), decode)
+module JsonModel.Message exposing (Incoming(..), ViewPropsValue, decode)
 
 import Json.Decode as D exposing (Decoder, Error)
 import Json.Decode.Pipeline as DP
@@ -10,11 +10,18 @@ type Incoming
     | Complete HasNext
     | MaxCount Int
     | IsReady
-    | Scroll Float
+    | ViewProps ViewPropsValue
 
 
 type alias HasNext =
     Bool
+
+
+type alias ViewPropsValue =
+    { scroll : Float
+    , sideMenuScroll : Float
+    , selectedSeconds : String
+    }
 
 
 decode : D.Value -> Result Error Incoming
@@ -31,6 +38,14 @@ decoder : Decoder Incoming
 decoder =
     D.field "type" D.string
         |> D.andThen incomingDecoder
+
+
+viewPropsValueDecoder : Decoder ViewPropsValue
+viewPropsValueDecoder =
+    D.succeed ViewPropsValue
+        |> DP.required "scroll" D.float
+        |> DP.required "sideMenuScroll" D.float
+        |> DP.required "selectedSeconds" D.string
 
 
 incomingDecoder : String -> Decoder Incoming
@@ -57,9 +72,9 @@ incomingDecoder typeStr =
         "is-ready" ->
             D.succeed IsReady
 
-        "scroll" ->
-            D.succeed Scroll
-                |> DP.required "data" D.float
+        "view-props" ->
+            D.succeed ViewProps
+                |> DP.required "data" viewPropsValueDecoder
 
         _ ->
             D.fail "Undefined type"

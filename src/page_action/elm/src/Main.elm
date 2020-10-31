@@ -1,13 +1,14 @@
 module Main exposing (main)
 
 import Browser
+import Browser.Dom
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
 import JsonModel.Message as Message exposing (Incoming)
-import JsonModel.Second2Comments exposing (Hours, Minutes, Second2Comments, Seconds)
+import JsonModel.Second2Comments as S2C exposing (Hours, Minutes, Second2Comments, Seconds)
 import Ports.Browser.Events as BE
 import Ports.Chrome.Tabs as Tabs
 import Regex exposing (Regex)
@@ -23,8 +24,21 @@ type alias Model =
     , fetchedCount : Int
     , maxCount : Int
     , remainingPages : Int
+    , viewProps : ViewProps
     , hasNext : Bool
     }
+
+
+type alias ViewProps =
+    { scroll : Float
+    , sideMenuScroll : Float
+    , selectedSeconds : SelectedSeconds
+    }
+
+
+type SelectedSeconds
+    = All
+    | Unit Int
 
 
 init : () -> ( Model, Cmd Msg )
@@ -33,6 +47,7 @@ init _ =
       , fetchedCount = 0
       , maxCount = 0
       , remainingPages = 0
+      , viewProps = { scroll = 0, sideMenuScroll = 0, selectedSeconds = All }
       , hasNext = False
       }
     , Cmd.batch
@@ -56,7 +71,9 @@ type Msg
     | NextPage
     | NextThreePages
     | ReceiveMessage D.Value
-    | SaveScroll Float
+    | ChangeSelectedSeconds SelectedSeconds
+    | SideMenuScroll Float
+    | SaveViewProps ViewProps
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -69,7 +86,7 @@ update msg model =
             ( model, Tabs.updateTime seconds )
 
         Cache ->
-            ( { model | remainingPages = 1 }, Tabs.sendCacheMessage )
+            ( { model | remainingPages = 1 }, Tabs.sendCacheMessage <| convertViewPropsForMessage model.viewProps )
 
         NextPage ->
             ( { model | remainingPages = 1 }, Tabs.sendNextPageMessage )
@@ -82,8 +99,68 @@ update msg model =
                 |> Result.map (receiveMessage model)
                 |> Result.withDefault ( model, Cmd.none )
 
-        SaveScroll scrollValue ->
-            ( model, Tabs.sendSaveScrollMessage scrollValue )
+        ChangeSelectedSeconds selectedSeconds ->
+            let
+                viewProps =
+                    model.viewProps
+
+                newViewProps =
+                    { viewProps | selectedSeconds = selectedSeconds, scroll = 0 }
+            in
+            ( { model | viewProps = newViewProps }
+            , Cmd.batch
+                [ Task.perform SaveViewProps <| Task.succeed newViewProps
+                , BE.scroll newViewProps.scroll
+                ]
+            )
+
+        SideMenuScroll sideMenuScroll ->
+            let
+                viewProps =
+                    model.viewProps
+
+                newViewProps =
+                    { viewProps | sideMenuScroll = sideMenuScroll }
+            in
+            ( { model | viewProps = newViewProps }, Task.perform SaveViewProps <| Task.succeed newViewProps )
+
+        SaveViewProps viewProps ->
+            ( { model | viewProps = viewProps }
+            , Tabs.sendSaveViewPropsMessage <| convertViewPropsForMessage viewProps
+            )
+
+
+convertViewPropsForMessage : ViewProps -> Message.ViewPropsValue
+convertViewPropsForMessage viewProps =
+    let
+        selectedSeconds =
+            case viewProps.selectedSeconds of
+                All ->
+                    "all"
+
+                Unit seconds ->
+                    String.fromInt seconds
+    in
+    { scroll = viewProps.scroll
+    , sideMenuScroll = viewProps.sideMenuScroll
+    , selectedSeconds = selectedSeconds
+    }
+
+
+convertViewPropsFromMessage : Message.ViewPropsValue -> ViewProps
+convertViewPropsFromMessage viewPropsValue =
+    let
+        selectedSeconds =
+            if viewPropsValue.selectedSeconds == "all" then
+                All
+
+            else
+                Unit <| Maybe.withDefault 0 <| String.toInt viewPropsValue.selectedSeconds
+    in
+    { scroll = viewPropsValue.scroll
+    , sideMenuScroll = viewPropsValue.sideMenuScroll
+    , selectedSeconds = selectedSeconds
+    }
 
 
 receiveMessage : Model -> Incoming -> ( Model, Cmd Msg )
@@ -119,10 +196,17 @@ receiveMessage model incoming =
             ( { model | maxCount = count }, Cmd.none )
 
         Message.IsReady ->
-            ( { model | remainingPages = 1 }, Tabs.sendCacheMessage )
+            ( { model | remainingPages = 1 }, Tabs.sendCacheMessage <| convertViewPropsForMessage model.viewProps )
 
-        Message.Scroll scrollValue ->
-            ( model, BE.scroll scrollValue )
+        Message.ViewProps viewPropsValue ->
+            ( { model | viewProps = convertViewPropsFromMessage viewPropsValue }
+            , Cmd.batch
+                [ BE.scroll viewPropsValue.scroll
+                , Task.attempt
+                    (\_ -> NoOp)
+                    (Browser.Dom.setViewportOf "side-menu-list" 0 viewPropsValue.sideMenuScroll)
+                ]
+            )
 
 
 
@@ -130,9 +214,9 @@ receiveMessage model incoming =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
+subscriptions { viewProps } =
     Sub.batch
-        [ Tabs.sendMessageResponse ReceiveMessage, BE.onScroll SaveScroll ]
+        [ Tabs.sendMessageResponse ReceiveMessage, BE.onScroll (\scroll -> SaveViewProps { viewProps | scroll = scroll }) ]
 
 
 
@@ -141,14 +225,26 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
+    let
+        pageActionClass =
+            if Dict.size model.sec2Comments /= 0 then
+                "page-action-with-comments"
+
+            else
+                "page-action-without-comments"
+    in
     div
-        []
+        [ class pageActionClass ]
         [ div
             [ class "header" ]
             [ navbar model
             , progress model
             ]
-        , content model
+        , div
+            [ class "columns is-mobile is-gapless content-container" ]
+            [ sideMenu model
+            , content model
+            ]
         ]
 
 
@@ -218,13 +314,101 @@ progress { remainingPages } =
             ]
 
 
+sideMenu : Model -> Html Msg
+sideMenu { sec2Comments, viewProps } =
+    let
+        menuList =
+            if Dict.size sec2Comments == 0 then
+                []
+
+            else
+                allElement viewProps.selectedSeconds
+                    :: (Dict.keys sec2Comments
+                            |> List.map (secondsElement viewProps.selectedSeconds)
+                       )
+    in
+    aside
+        [ class "menu column is-4" ]
+        [ ul
+            [ id "side-menu-list"
+            , class "menu-list side-menu-list"
+            , on "scroll" <| D.map SideMenuScroll targetScrollTop
+            ]
+            menuList
+        ]
+
+
+allElement : SelectedSeconds -> Html Msg
+allElement selectedSeconds =
+    let
+        isActiveStr =
+            case selectedSeconds of
+                All ->
+                    "is-active"
+
+                Unit _ ->
+                    ""
+    in
+    li
+        []
+        [ a
+            [ class isActiveStr
+            , onClick <| ChangeSelectedSeconds All
+            ]
+            [ text "ALL" ]
+        ]
+
+
+secondsElement : SelectedSeconds -> Seconds -> Html Msg
+secondsElement selectedSeconds seconds =
+    let
+        isActiveStr =
+            case selectedSeconds of
+                All ->
+                    ""
+
+                Unit actualSeconds ->
+                    if actualSeconds == seconds then
+                        "is-active"
+
+                    else
+                        ""
+    in
+    li
+        []
+        [ a
+            [ class isActiveStr
+            , onClick <| ChangeSelectedSeconds (Unit seconds)
+            ]
+            [ text <| toTimeStr seconds ]
+        ]
+
+
+targetScrollTop : D.Decoder Float
+targetScrollTop =
+    D.at [ "target", "scrollTop" ] D.float
+
+
 content : Model -> Html Msg
-content { sec2Comments } =
+content { sec2Comments, viewProps } =
+    let
+        cards =
+            case viewProps.selectedSeconds of
+                All ->
+                    S2C.uniqueComments sec2Comments
+                        |> Dict.toList
+                        |> List.map toCommentCards
+
+                Unit seconds ->
+                    [ ( seconds
+                      , Dict.get seconds sec2Comments |> Maybe.withDefault []
+                      )
+                    ]
+                        |> List.map toCommentCards
+    in
     div
-        [ class "content" ]
-        (Dict.toList sec2Comments
-            |> List.map toCommentCards
-        )
+        [ class "column" ]
+        cards
 
 
 toCommentCards : ( Seconds, List String ) -> Html Msg
