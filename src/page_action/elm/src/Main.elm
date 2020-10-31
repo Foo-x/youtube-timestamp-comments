@@ -407,7 +407,7 @@ content { sec2Comments, viewProps } =
                         |> List.map toCommentCards
     in
     div
-        [ class "column" ]
+        [ class "column is-8" ]
         cards
 
 
