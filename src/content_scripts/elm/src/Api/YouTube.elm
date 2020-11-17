@@ -24,7 +24,7 @@ fetchComments continuation itct ytConfig =
         |> HB.withHeaders
             [ ( "x-youtube-identity-token", ytConfig.idToken )
             , ( "x-youtube-client-version", ytConfig.innertubeContextClientVersion )
-            , ( "x-youtube-page-label", String.fromInt ytConfig.pageBuildLabel )
+            , ( "x-youtube-page-label", ytConfig.pageBuildLabel )
             , ( "x-youtube-page-cl", String.fromInt ytConfig.pageCl )
             , ( "x-youtube-variants-checksum", ytConfig.variantsChecksum )
             , ( "x-youtube-client-name", "1" )
@@ -55,7 +55,7 @@ fetchPage ytConfig =
         |> HB.withHeaders
             [ ( "x-youtube-identity-token", ytConfig.idToken )
             , ( "x-youtube-client-version", ytConfig.innertubeContextClientVersion )
-            , ( "x-youtube-page-label", String.fromInt ytConfig.pageBuildLabel )
+            , ( "x-youtube-page-label", ytConfig.pageBuildLabel )
             , ( "x-youtube-page-cl", String.fromInt ytConfig.pageCl )
             , ( "x-youtube-variants-checksum", ytConfig.variantsChecksum )
             , ( "x-youtube-client-name", "1" )
