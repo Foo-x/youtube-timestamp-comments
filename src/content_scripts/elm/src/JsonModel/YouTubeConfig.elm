@@ -11,7 +11,6 @@ type alias YouTubeConfig =
     , innertubeContextClientVersion : String
     , pageBuildLabel : String
     , pageCl : Int
-    , variantsChecksum : String
     , xsrfToken : String
     }
 
@@ -34,5 +33,4 @@ decoder =
         |> DP.required "INNERTUBE_CONTEXT_CLIENT_VERSION" D.string
         |> DP.required "PAGE_BUILD_LABEL" D.string
         |> DP.required "PAGE_CL" D.int
-        |> DP.required "VARIANTS_CHECKSUM" D.string
         |> DP.required "XSRF_TOKEN" D.string
