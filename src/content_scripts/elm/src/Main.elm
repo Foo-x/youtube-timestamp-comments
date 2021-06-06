@@ -132,8 +132,8 @@ handleMessage model incoming =
             let
                 cmds =
                     [ Runtime.sendMaxCount props.maxCount
-                    , Runtime.sendPage props.second2Comments props.fetchedCount
                     , Runtime.sendViewProps viewProps
+                    , Runtime.sendPage props.second2Comments props.fetchedCount
                     , Runtime.sendComplete True
                     ]
             in
@@ -143,8 +143,8 @@ handleMessage model incoming =
             let
                 cmds =
                     [ Runtime.sendMaxCount props.maxCount
-                    , Runtime.sendPage props.second2Comments props.fetchedCount
                     , Runtime.sendViewProps viewProps
+                    , Runtime.sendPage props.second2Comments props.fetchedCount
                     , Runtime.sendComplete False
                     ]
             in
