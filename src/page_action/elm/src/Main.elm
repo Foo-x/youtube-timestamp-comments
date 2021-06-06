@@ -362,23 +362,28 @@ allElement selectedSeconds =
 secondsElement : SelectedSeconds -> Seconds -> Html Msg
 secondsElement selectedSeconds seconds =
     let
-        isActiveStr =
-            case selectedSeconds of
-                All ->
-                    ""
+        isActive =
+            selectedSeconds == Unit seconds
 
-                Unit actualSeconds ->
-                    if actualSeconds == seconds then
-                        "is-active"
+        classStr =
+            if isActive then
+                "is-active"
 
-                    else
-                        ""
+            else
+                ""
+
+        onClickEvent =
+            if isActive then
+                UpdateTime seconds
+
+            else
+                ChangeSelectedSeconds <| Unit seconds
     in
     li
         []
         [ a
-            [ class isActiveStr
-            , onClick <| ChangeSelectedSeconds (Unit seconds)
+            [ class classStr
+            , onClick onClickEvent
             ]
             [ text <| toTimeStr seconds ]
         ]
