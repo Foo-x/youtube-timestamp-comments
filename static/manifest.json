@@ -1,6 +1,6 @@
 {
   "name": "YouTube Timestamp Comments",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "manifest_version": 2,
   "description": "An extension that lists timestamp comments at YouTube.",
   "icons": {
