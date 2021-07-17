@@ -1,9 +1,6 @@
 const Main = () => {
   return (
-    <main
-      className="columns is-mobile is-gapless content-container"
-      role="main"
-    >
+    <main className="columns is-mobile is-gapless main-container" role="main">
       <aside className="menu column is-4">
         <ul id="side-menu-list" className="menu-list side-menu-list">
           <li>

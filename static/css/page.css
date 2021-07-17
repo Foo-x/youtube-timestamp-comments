@@ -16,12 +16,16 @@
 }
 
 .navbar-menu {
-  padding: 0 .25rem;
+  padding: 0 0.25rem;
   box-shadow: none;
 }
 
 .navbar-item {
   display: inline-flex;
+}
+
+.navbar-end {
+  display: flex;
 }
 
 .flex-grow-1 {
@@ -51,11 +55,11 @@
   display: none;
 }
 
-.content-container {
+.main-container {
   padding-top: 42px !important;
 }
 
 .disabled {
-  opacity: .5;
+  opacity: 0.5;
   pointer-events: none;
 }
