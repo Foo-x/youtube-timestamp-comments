@@ -18,8 +18,12 @@ chrome.runtime.onInstalled.addListener(function () {
 
 chrome.tabs.onUpdated.addListener(
   (tabId: number, change: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+    if (!tab.url) {
+      return;
+    }
+
     const url = new URL(tab.url!);
-    if (url.hostname !== TARGET_HOST || url.pathname !== TARGET_PATH) {
+    if (url.pathname !== TARGET_PATH) {
       return;
     }
 

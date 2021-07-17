@@ -18,13 +18,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
+      "matches": ["https://www.youtube.com/watch*"],
       "js": ["js/content_scripts/contentScript.js"]
     }
   ],
   "permissions": [
     "https://www.youtube.com/watch*",
-    "declarativeContent",
-    "tabs"
+    "declarativeContent"
   ]
 }
