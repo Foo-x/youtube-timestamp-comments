@@ -2,3 +2,4 @@ node_modules
 dist
 elm-stuff
 .cache
+.parcel-cache

@@ -8,12 +8,12 @@
     "build": "npm run clean && npm run static && npm run build:js",
     "build:js": "$npm_package_config_build --no-source-maps",
     "dev": "npm run clean && npm run static && npm run dev:js",
-    "dev:js": "NODE_ENV=development $npm_package_config_build --no-minify",
+    "dev:js": "NODE_ENV=development $npm_package_config_build --no-optimize",
     "archive": "npm run build && cd dist && zip youtube-timestamp-comments * -r",
     "watch": "nodemon"
   },
   "config": {
-    "build": "parcel build src/page_action/pageAction.js src/background/background.js src/content_scripts/contentScript.js -d dist/js"
+    "build": "parcel build src/page_action/pageAction.js src/background/background.js src/content_scripts/contentScript.js --dist-dir dist/js"
   },
   "nodemonConfig": {
     "ext": "html,css,js,json,elm",
@@ -26,17 +26,19 @@
   "devDependencies": {
     "@babel/core": "^7.14.6",
     "@fortawesome/fontawesome-free": "^5.15.3",
+    "@parcel/transformer-elm": "^2.0.0-nightly.2393",
     "@types/chrome": "^0.0.86",
     "@types/node": "^16.3.3",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "bulma": "^0.7.5",
     "bulma-divider": "^0.2.0",
+    "elm": "^0.19.1-5",
     "elm-hot": "^1.1.6",
     "eslint-config-prettier": "^8.3.0",
     "node-elm-compiler": "^5.0.6",
     "nodemon": "^1.19.1",
-    "parcel-bundler": "^1.12.5",
+    "parcel": "^2.0.0-beta.3.1",
     "prettier": "^2.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
