@@ -13,7 +13,7 @@
     "watch": "nodemon"
   },
   "config": {
-    "build": "parcel build src/page_action/pageAction.tsx src/background/background.js src/content_scripts/contentScript.ts --dist-dir dist/js"
+    "build": "parcel build src/page_action/pageAction.tsx src/background/background.ts src/content_scripts/contentScript.ts --dist-dir dist/js"
   },
   "nodemonConfig": {
     "ext": "html,css,js,json,elm",
