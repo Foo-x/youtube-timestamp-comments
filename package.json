@@ -32,7 +32,7 @@
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.1.8",
-    "bulma": "^0.7.5",
+    "bulma": "^0.9.3",
     "bulma-divider": "^0.2.0",
     "elm": "^0.19.1-5",
     "elm-hot": "^1.1.6",
