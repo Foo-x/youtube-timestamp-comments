@@ -23,7 +23,6 @@
     }
   ],
   "permissions": [
-    "https://www.youtube.com/watch*",
     "declarativeContent",
     "storage"
   ]
