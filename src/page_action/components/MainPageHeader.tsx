@@ -1,12 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const Header = () => {
-  const configLink = useLocation().pathname === "/" ? "/config" : "/";
-
+const MainPageHeader = () => {
   return (
     <header className="header">
       <nav className="navbar">
-        <div className="navbar-menu is-active is-flex">
+        <div className="navbar-menu is-flex">
           <div className="navbar-start flex-grow-1">
             <div className="navbar-item">0 / 100</div>
           </div>
@@ -16,7 +14,7 @@ const Header = () => {
                 <i className="fas fa-angle-right fa-lg" />
               </span>
             </a>
-            <Link to={configLink} className="navbar-item">
+            <Link to="/config" className="navbar-item">
               <span className="icon">
                 <i className="fas fa-cog fa-sm" />
               </span>
@@ -29,4 +27,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default MainPageHeader;

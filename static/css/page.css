@@ -28,6 +28,11 @@
   display: flex;
 }
 
+.config-header-menu {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 .flex-grow-1 {
   flex-grow: 1;
 }
