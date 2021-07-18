@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
+import MainPage from "./pages/MainPage";
 import "bulma/css/bulma.min.css";
 import "bulma-divider/dist/css/bulma-divider.min.css";
 import "@fortawesome/fontawesome-free/css/fontawesome.css";
@@ -10,7 +10,7 @@ import "@fortawesome/fontawesome-free/js/solid";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <MainPage />
   </React.StrictMode>,
   document.getElementById("root")
 );

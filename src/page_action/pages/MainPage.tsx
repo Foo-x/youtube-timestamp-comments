@@ -1,9 +1,9 @@
-import Header from "./components/Header";
-import Main from "./components/Main";
+import Header from "../components/Header";
+import Main from "../components/Main";
 import { Route, MemoryRouter as Router, Switch } from "react-router-dom";
-import Config from "./components/Config";
+import Config from "../components/Config";
 
-const App = () => {
+const MainPage = () => {
   return (
     <Router>
       <div className="page-action-with-comments">
@@ -17,4 +17,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default MainPage;
