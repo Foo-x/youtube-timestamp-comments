@@ -16,7 +16,7 @@
     "build": "parcel build src/page_action/pageAction.tsx src/background/background.ts src/content_scripts/contentScript.ts --dist-dir dist/js"
   },
   "nodemonConfig": {
-    "ext": "html,css,js,json,elm",
+    "ext": "html,css,js,json,elm,ts,tsx",
     "exec": "npm run dev",
     "watch": [
       "src",
