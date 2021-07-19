@@ -27,9 +27,10 @@ const Config = () => {
               id="api-key-input"
               name="api-key-input"
               className="api-key-input input"
-              type="text"
+              type="password"
               placeholder="AIza..."
               value={key}
+              onFocus={(event) => event.currentTarget.select()}
               onInput={(event) => dispatch(event.currentTarget.value)}
             />
           </div>
