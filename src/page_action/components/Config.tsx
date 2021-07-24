@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react";
-import { getApiKey, setApiKey } from "../modules/ChromeStorage";
+import { getApiKey, setApiKey } from "../../modules/ChromeStorage";
 
 const apiKeyReducer = (_: string, newKey: string): string => {
   setApiKey(newKey);
