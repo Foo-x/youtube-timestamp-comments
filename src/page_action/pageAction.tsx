@@ -10,6 +10,14 @@ import { MemoryRouter as Router, Route, Switch } from "react-router-dom";
 import ConfigPage from "./pages/ConfigPage";
 import MainPage from "./pages/MainPage";
 
+chrome.runtime.onMessage.addListener((message) => {
+  // TODO
+});
+
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  chrome.tabs.sendMessage(tabs[0].id!, { type: "cache" });
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <Router>
