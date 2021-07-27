@@ -1,6 +1,6 @@
 type ApiKey = string & { readonly _: unique symbol };
 type VideoId = string & { readonly _: unique symbol };
-type Second2Comments = Map<string, string[]>;
+type Second2Comments = Map<number, string[]>;
 
 type ViewProps = {
   scroll: number;

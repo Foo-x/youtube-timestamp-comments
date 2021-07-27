@@ -161,9 +161,9 @@ const mergeS2C = (
 
 const createS2C = (comments: string[]): Second2Comments => {
   return comments
-    .map<[string, string[]]>((comment) => [
+    .map<[string, number[]]>((comment) => [
       comment,
-      extractTimestampSeconds(comment).map((second) => "" + second),
+      extractTimestampSeconds(comment),
     ])
     .map(([comment, seconds]) =>
       seconds.reduce((s2c, second) => {
@@ -173,7 +173,7 @@ const createS2C = (comments: string[]): Second2Comments => {
         }
         s2c.set(second, [comment]);
         return s2c;
-      }, new Map<string, string[]>() as Second2Comments)
+      }, new Map<number, string[]>() as Second2Comments)
     )
     .reduce(mergeS2C);
 };
