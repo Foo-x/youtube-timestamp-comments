@@ -47,9 +47,19 @@ const sendResponse = (responseMsg: ResponseMsg) => {
 const sendPageResponse = (model: WithPageToken | LastPageLoaded) => {
   const s2c = Object.fromEntries(model.s2c);
   if (model.state === "with-page-token") {
-    sendResponse({ type: "page", data: s2c, isLast: false });
+    sendResponse({
+      type: "page",
+      data: s2c,
+      totalCount: model.totalCount,
+      isLast: false,
+    });
   } else {
-    sendResponse({ type: "page", data: s2c, isLast: true });
+    sendResponse({
+      type: "page",
+      data: s2c,
+      totalCount: model.totalCount,
+      isLast: true,
+    });
   }
 };
 

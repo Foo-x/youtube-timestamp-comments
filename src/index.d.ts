@@ -17,6 +17,7 @@ type SaveViewPropsToCS = { type: "save-view-props"; data: ViewProps };
 type PageToPA = {
   type: "page";
   data: { [second: string]: string[] };
+  totalCount: number;
   isLast: boolean;
 };
 type ViewPropsToPA = { type: "view-props"; data: ViewProps };
