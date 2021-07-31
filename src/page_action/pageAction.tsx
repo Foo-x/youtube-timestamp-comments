@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter as Router, Route, Switch } from "react-router-dom";
 import {
+  IsLastContext,
   Second2CommentsContext,
   TotalCountContext,
 } from "./contexts/AppContext";
@@ -19,6 +20,7 @@ type Msg = PageToPA | ViewPropsToPA;
 const PageAction = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
+  const [isLast, setIsLast] = useState(true);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: Msg) => {
@@ -33,6 +35,7 @@ const PageAction = () => {
             ])
           )
         );
+        setIsLast(msg.isLast);
       }
     });
 
@@ -45,7 +48,9 @@ const PageAction = () => {
     <>
       <TotalCountContext.Provider value={totalCount}>
         <Second2CommentsContext.Provider value={s2c}>
-          <Route exact path="/" component={MainPage} />
+          <IsLastContext.Provider value={isLast}>
+            <Route exact path="/" component={MainPage} />
+          </IsLastContext.Provider>
         </Second2CommentsContext.Provider>
       </TotalCountContext.Provider>
       <Route exact path="/config" component={ConfigPage} />
