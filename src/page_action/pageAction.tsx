@@ -9,6 +9,7 @@ import ReactDOM from "react-dom";
 import { MemoryRouter as Router, Route, Switch } from "react-router-dom";
 import {
   IsLastContext,
+  IsProgressContext,
   Second2CommentsContext,
   TotalCountContext,
 } from "./contexts/AppContext";
@@ -21,6 +22,7 @@ const PageAction = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
   const [isLast, setIsLast] = useState(true);
+  const [isProgress, setIsProgress] = useState(false);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: Msg) => {
@@ -36,10 +38,12 @@ const PageAction = () => {
           )
         );
         setIsLast(msg.isLast);
+        setIsProgress(false);
       }
     });
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      setIsProgress(true);
       chrome.tabs.sendMessage(tabs[0].id!, { type: "cache" });
     });
   }, []);
@@ -49,7 +53,9 @@ const PageAction = () => {
       <TotalCountContext.Provider value={totalCount}>
         <Second2CommentsContext.Provider value={s2c}>
           <IsLastContext.Provider value={isLast}>
-            <Route exact path="/" component={MainPage} />
+            <IsProgressContext.Provider value={isProgress}>
+              <Route exact path="/" component={MainPage} />
+            </IsProgressContext.Provider>
           </IsLastContext.Provider>
         </Second2CommentsContext.Provider>
       </TotalCountContext.Provider>

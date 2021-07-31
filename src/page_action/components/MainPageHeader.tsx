@@ -1,10 +1,23 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { IsLastContext, TotalCountContext } from "../contexts/AppContext";
+import {
+  IsLastContext,
+  IsProgressContext,
+  TotalCountContext,
+} from "../contexts/AppContext";
 
 const MainPageHeader = () => {
   const totalCount = useContext(TotalCountContext);
   const isLast = useContext(IsLastContext);
+  const isProgress = useContext(IsProgressContext);
+
+  const progress = isProgress ? (
+    <div>
+      <progress className="progress is-info" />
+    </div>
+  ) : (
+    <div className="pregress-stopped"></div>
+  );
 
   return (
     <header className="header">
@@ -30,7 +43,7 @@ const MainPageHeader = () => {
           </div>
         </div>
       </nav>
-      <div className="pregress-stopped"></div>
+      {progress}
     </header>
   );
 };
