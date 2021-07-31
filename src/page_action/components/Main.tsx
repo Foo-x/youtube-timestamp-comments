@@ -123,16 +123,15 @@ const Main = () => {
         </li>
         {Array.from(s2c.keys(), (key) => {
           const timeStr = secToTimeStr(key);
-          return (
-            <li key={key}>
-              <a
-                className={selectedSeconds === key ? "is-active" : ""}
-                onClick={() => setSelectedSeconds(key)}
-              >
+          const button =
+            selectedSeconds === key ? (
+              <a className="is-active" onClick={() => updateTime(key)}>
                 {timeStr}
               </a>
-            </li>
-          );
+            ) : (
+              <a onClick={() => setSelectedSeconds(key)}>{timeStr}</a>
+            );
+          return <li key={key}>{button}</li>;
         })}
       </ul>
     </aside>
