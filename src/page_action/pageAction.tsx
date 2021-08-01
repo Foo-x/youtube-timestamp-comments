@@ -17,8 +17,6 @@ import { sendMessage } from "./modules/ChromeTabs";
 import ConfigPage from "./pages/ConfigPage";
 import MainPage from "./pages/MainPage";
 
-type Msg = PageToPA | ViewPropsToPA;
-
 const PageAction = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
@@ -26,7 +24,7 @@ const PageAction = () => {
   const [isProgress, setIsProgress] = useState(false);
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((msg: Msg) => {
+    chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
       console.log(msg);
       if (msg.type === "page") {
         setTotalCount(msg.totalCount);

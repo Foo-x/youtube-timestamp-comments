@@ -37,10 +37,7 @@ init();
 
 // UPDATE
 
-type Msg = CacheToCS | NextPageToCS | SaveViewPropsToCS;
-type ResponseMsg = PageToPA | ViewPropsToPA;
-
-const sendResponse = (responseMsg: ResponseMsg) => {
+const sendResponse = (responseMsg: MsgToPA) => {
   chrome.runtime.sendMessage(responseMsg);
 };
 
@@ -244,7 +241,7 @@ const onNextPage = async () => {
   sendPageResponse(model);
 };
 
-const update = async (msg: Msg) => {
+const update = async (msg: MsgToCS) => {
   if (msg.type === "cache") {
     onCache();
     return;
@@ -255,6 +252,6 @@ const update = async (msg: Msg) => {
   }
 };
 
-chrome.runtime.onMessage.addListener((message: Msg) => {
+chrome.runtime.onMessage.addListener((message: MsgToCS) => {
   update(message);
 });

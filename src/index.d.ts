@@ -12,6 +12,7 @@ type ViewProps = {
 type CacheToCS = { type: "cache" };
 type NextPageToCS = { type: "next-page" };
 type SaveViewPropsToCS = { type: "save-view-props"; data: ViewProps };
+type MsgToCS = CacheToCS | NextPageToCS | SaveViewPropsToCS;
 
 // message from content_scripts to page_action
 type PageToPA = {
@@ -21,3 +22,4 @@ type PageToPA = {
   isLast: boolean;
 };
 type ViewPropsToPA = { type: "view-props"; data: ViewProps };
+type MsgToPA = PageToPA | ViewPropsToPA;
