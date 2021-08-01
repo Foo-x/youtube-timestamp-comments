@@ -46,7 +46,7 @@ const PageAction = () => {
       }
     });
 
-    window.onscroll = () => {
+    window.onblur = () => {
       sendMessage({
         type: "save-view-props",
         data: {
