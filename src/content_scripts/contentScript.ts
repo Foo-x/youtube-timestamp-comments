@@ -241,6 +241,7 @@ const onNextPage = async () => {
         totalCount: pageResult.totalCount,
         viewProps,
       };
+  sendPageResponse(model);
 };
 
 const update = async (msg: Msg) => {

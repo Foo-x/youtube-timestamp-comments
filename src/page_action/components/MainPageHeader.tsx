@@ -5,11 +5,12 @@ import {
   IsProgressContext,
   TotalCountContext,
 } from "../contexts/AppContext";
+import { sendMessage } from "../modules/ChromeTabs";
 
 const MainPageHeader = () => {
   const totalCount = useContext(TotalCountContext);
   const isLast = useContext(IsLastContext);
-  const isProgress = useContext(IsProgressContext)[0];
+  const [isProgress, setIsProgress] = useContext(IsProgressContext);
 
   const progress = isProgress ? (
     <div>
@@ -18,6 +19,11 @@ const MainPageHeader = () => {
   ) : (
     <div className="progress-stopped"></div>
   );
+
+  const fetchNextPage = () => {
+    setIsProgress(true);
+    sendMessage({ type: "next-page" });
+  };
 
   return (
     <header className="header">
@@ -30,7 +36,10 @@ const MainPageHeader = () => {
             </div>
           </div>
           <div className="navbar-end">
-            <a className={isLast ? "navbar-item disabled" : "navbar-item"}>
+            <a
+              className={isLast ? "navbar-item disabled" : "navbar-item"}
+              onClick={fetchNextPage}
+            >
               <span className="icon">
                 <i className="fas fa-angle-right fa-lg" />
               </span>
