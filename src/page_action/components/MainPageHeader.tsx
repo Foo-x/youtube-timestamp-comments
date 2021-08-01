@@ -9,7 +9,7 @@ import {
 const MainPageHeader = () => {
   const totalCount = useContext(TotalCountContext);
   const isLast = useContext(IsLastContext);
-  const isProgress = useContext(IsProgressContext);
+  const isProgress = useContext(IsProgressContext)[0];
 
   const progress = isProgress ? (
     <div>

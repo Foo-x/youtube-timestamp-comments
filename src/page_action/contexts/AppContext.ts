@@ -8,4 +8,6 @@ export const Second2CommentsContext = React.createContext<Second2Comments>(
 
 export const IsLastContext = React.createContext(false);
 
-export const IsProgressContext = React.createContext(false);
+export const IsProgressContext = React.createContext<
+  [boolean, (isProgress: boolean) => void]
+>([false, () => {}]);

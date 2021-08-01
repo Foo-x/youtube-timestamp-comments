@@ -13,6 +13,7 @@ import {
   Second2CommentsContext,
   TotalCountContext,
 } from "./contexts/AppContext";
+import { sendMessage } from "./modules/ChromeTabs";
 import ConfigPage from "./pages/ConfigPage";
 import MainPage from "./pages/MainPage";
 
@@ -42,10 +43,8 @@ const PageAction = () => {
       }
     });
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      setIsProgress(true);
-      chrome.tabs.sendMessage(tabs[0].id!, { type: "cache" });
-    });
+    setIsProgress(true);
+    sendMessage({ type: "cache" });
   }, []);
 
   return (
@@ -53,7 +52,7 @@ const PageAction = () => {
       <TotalCountContext.Provider value={totalCount}>
         <Second2CommentsContext.Provider value={s2c}>
           <IsLastContext.Provider value={isLast}>
-            <IsProgressContext.Provider value={isProgress}>
+            <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
               <Route exact path="/" component={MainPage} />
             </IsProgressContext.Provider>
           </IsLastContext.Provider>
