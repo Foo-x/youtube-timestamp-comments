@@ -250,6 +250,13 @@ const update = async (msg: MsgToCS) => {
     onNextPage();
     return;
   }
+  if (
+    msg.type === "save-view-props" &&
+    (model.state === "with-page-token" || model.state === "last-page-loaded")
+  ) {
+    model.viewProps = msg.data;
+    return;
+  }
 };
 
 chrome.runtime.onMessage.addListener((message: MsgToCS) => {

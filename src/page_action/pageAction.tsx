@@ -38,8 +38,24 @@ const PageAction = () => {
         );
         setIsLast(msg.isLast);
         setIsProgress(false);
+        return;
+      }
+      if (msg.type === "view-props") {
+        window.scroll(0, msg.data.scroll);
+        return;
       }
     });
+
+    window.onscroll = () => {
+      sendMessage({
+        type: "save-view-props",
+        data: {
+          scroll: window.scrollY,
+          selectedSeconds: "",
+          sideMenuScroll: 0,
+        },
+      });
+    };
 
     setIsProgress(true);
     sendMessage({ type: "cache" });
