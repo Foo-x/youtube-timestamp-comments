@@ -16,7 +16,7 @@ const MainPageHeader = () => {
       <progress className="progress is-info" />
     </div>
   ) : (
-    <div className="pregress-stopped"></div>
+    <div className="progress-stopped"></div>
   );
 
   return (
