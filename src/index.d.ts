@@ -1,11 +1,12 @@
 type ApiKey = string & { readonly _: unique symbol };
 type VideoId = string & { readonly _: unique symbol };
 type Second2Comments = Map<number, string[]>;
+type SelectedSeconds = "ALL" | number;
 
 type ViewProps = {
   scroll: number;
   sideMenuScroll: number;
-  selectedSeconds: string;
+  selectedSeconds: SelectedSeconds;
 };
 
 // message from page_action to content_scripts

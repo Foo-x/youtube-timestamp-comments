@@ -1,5 +1,8 @@
-import { useContext, useState } from "react";
-import { Second2CommentsContext } from "../contexts/AppContext";
+import { useContext } from "react";
+import {
+  Second2CommentsContext,
+  SelectedSecondsContext,
+} from "../contexts/AppContext";
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
 
@@ -108,7 +111,9 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
 
 const Main = () => {
   const s2c = useContext(Second2CommentsContext);
-  const [selectedSeconds, setSelectedSeconds] = useState<"ALL" | number>("ALL");
+  const [selectedSeconds, setSelectedSeconds] = useContext(
+    SelectedSecondsContext
+  );
 
   const sideMenu = (
     <aside className="menu column is-4">

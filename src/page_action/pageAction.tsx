@@ -11,6 +11,7 @@ import {
   IsLastContext,
   IsProgressContext,
   Second2CommentsContext,
+  SelectedSecondsContext,
   TotalCountContext,
 } from "./contexts/AppContext";
 import { sendMessage } from "./modules/ChromeTabs";
@@ -22,6 +23,8 @@ const PageAction = () => {
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
   const [isLast, setIsLast] = useState(true);
   const [isProgress, setIsProgress] = useState(false);
+  const [selectedSeconds, setSelectedSeconds] =
+    useState<SelectedSeconds>("ALL");
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
@@ -42,24 +45,26 @@ const PageAction = () => {
       }
       if (msg.type === "view-props") {
         window.scroll(0, msg.data.scroll);
+        setSelectedSeconds(msg.data.selectedSeconds);
         return;
       }
     });
 
+    setIsProgress(true);
+    sendMessage({ type: "cache" });
+  }, []);
+  useEffect(() => {
     window.onblur = () => {
       sendMessage({
         type: "save-view-props",
         data: {
           scroll: window.scrollY,
-          selectedSeconds: "",
+          selectedSeconds,
           sideMenuScroll: 0,
         },
       });
     };
-
-    setIsProgress(true);
-    sendMessage({ type: "cache" });
-  }, []);
+  }, [selectedSeconds]);
 
   return (
     <>
@@ -67,7 +72,11 @@ const PageAction = () => {
         <Second2CommentsContext.Provider value={s2c}>
           <IsLastContext.Provider value={isLast}>
             <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
-              <Route exact path="/" component={MainPage} />
+              <SelectedSecondsContext.Provider
+                value={[selectedSeconds, setSelectedSeconds]}
+              >
+                <Route exact path="/" component={MainPage} />
+              </SelectedSecondsContext.Provider>
             </IsProgressContext.Provider>
           </IsLastContext.Provider>
         </Second2CommentsContext.Provider>

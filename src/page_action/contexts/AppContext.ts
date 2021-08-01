@@ -11,3 +11,7 @@ export const IsLastContext = React.createContext(false);
 export const IsProgressContext = React.createContext<
   [boolean, (isProgress: boolean) => void]
 >([false, () => {}]);
+
+export const SelectedSecondsContext = React.createContext<
+  [SelectedSeconds, (selectedSeconds: SelectedSeconds) => void]
+>(["ALL", () => {}]);
