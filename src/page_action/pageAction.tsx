@@ -6,10 +6,16 @@ import "bulma-divider/dist/css/bulma-divider.min.css";
 import "bulma/css/bulma.min.css";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { MemoryRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  MemoryRouter as Router,
+  Route,
+  Switch,
+  useLocation,
+} from "react-router-dom";
 import {
   IsLastContext,
   IsProgressContext,
+  ScrollContext,
   Second2CommentsContext,
   SelectedSecondsContext,
   TotalCountContext,
@@ -19,10 +25,13 @@ import ConfigPage from "./pages/ConfigPage";
 import MainPage from "./pages/MainPage";
 
 const PageAction = () => {
+  const location = useLocation();
+
   const [totalCount, setTotalCount] = useState(0);
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
   const [isLast, setIsLast] = useState(true);
   const [isProgress, setIsProgress] = useState(false);
+  const [scroll, setScroll] = useState(0);
   const [selectedSeconds, setSelectedSeconds] =
     useState<SelectedSeconds>("ALL");
 
@@ -44,7 +53,7 @@ const PageAction = () => {
         return;
       }
       if (msg.type === "view-props") {
-        window.scroll(0, msg.data.scroll);
+        setScroll(msg.data.scroll);
         setSelectedSeconds(msg.data.selectedSeconds);
         return;
       }
@@ -58,13 +67,18 @@ const PageAction = () => {
       sendMessage({
         type: "save-view-props",
         data: {
-          scroll: window.scrollY,
+          scroll: location.pathname === "/" ? window.scrollY : scroll,
           selectedSeconds,
           sideMenuScroll: 0,
         },
       });
     };
-  }, [selectedSeconds]);
+  }, [location.pathname, scroll, selectedSeconds]);
+  useEffect(() => {
+    if (location.pathname === "/") {
+      window.scroll(0, scroll);
+    }
+  }, [location.pathname, scroll]);
 
   return (
     <>
@@ -72,11 +86,15 @@ const PageAction = () => {
         <Second2CommentsContext.Provider value={s2c}>
           <IsLastContext.Provider value={isLast}>
             <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
-              <SelectedSecondsContext.Provider
-                value={[selectedSeconds, setSelectedSeconds]}
-              >
-                <Route exact path="/" component={MainPage} />
-              </SelectedSecondsContext.Provider>
+              <ScrollContext.Provider value={[scroll, setScroll]}>
+                <SelectedSecondsContext.Provider
+                  value={[selectedSeconds, setSelectedSeconds]}
+                >
+                  <Route exact path="/">
+                    <MainPage />
+                  </Route>
+                </SelectedSecondsContext.Provider>
+              </ScrollContext.Provider>
             </IsProgressContext.Provider>
           </IsLastContext.Provider>
         </Second2CommentsContext.Provider>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   IsLastContext,
   IsProgressContext,
+  ScrollContext,
   TotalCountContext,
 } from "../contexts/AppContext";
 import { sendMessage } from "../modules/ChromeTabs";
@@ -11,6 +12,7 @@ const MainPageHeader = () => {
   const totalCount = useContext(TotalCountContext);
   const isLast = useContext(IsLastContext);
   const [isProgress, setIsProgress] = useContext(IsProgressContext);
+  const setScroll = useContext(ScrollContext)[1];
 
   const progress = isProgress ? (
     <div>
@@ -44,7 +46,11 @@ const MainPageHeader = () => {
                 <i className="fas fa-angle-right fa-lg" />
               </span>
             </a>
-            <Link to="/config" className="navbar-item">
+            <Link
+              to="/config"
+              className="navbar-item"
+              onClick={() => setScroll(window.scrollY)}
+            >
               <span className="icon">
                 <i className="fas fa-cog fa-sm" />
               </span>
