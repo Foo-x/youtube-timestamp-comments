@@ -36,7 +36,7 @@ YouTube の時間指定コメントを表示する Google Chrome 拡張機能で
     1. https://console.cloud.google.com/apis/credentials にアクセスする。
     2. 「+ 認証情報を作成」をクリックし、「APIキー」を選択する。  
         ![APIキーを作成](./doc/user/resources/createkey.ja.png)
-    3. キーを制限」をクリックする。  
+    3. 「キーを制限」をクリックする。  
         ![キーを制限](./doc/user/resources/restrictkey.ja.png)
         - 「キーを制限」をクリックせずに閉じてしまった場合は、APIキーのリストにある編集アイコンをクリックしてください。  
             ![キーを編集](./doc/user/resources/editkey.ja.png)
