@@ -1,7 +1,8 @@
-import { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import {
   Second2CommentsContext,
   SelectedSecondsContext,
+  SideMenuScrollContext,
 } from "../contexts/AppContext";
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
@@ -111,13 +112,29 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
 
 const Main = () => {
   const s2c = useContext(Second2CommentsContext);
+  const [sideMenuScroll, setSideMenuScroll] = useContext(SideMenuScrollContext);
   const [selectedSeconds, setSelectedSeconds] = useContext(
     SelectedSecondsContext
   );
 
+  const sideMenuListRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    sideMenuListRef.current?.scroll(0, sideMenuScroll);
+  }, [sideMenuScroll]);
+
+  const onscroll: React.UIEventHandler = (event) => {
+    setSideMenuScroll(event.currentTarget.scrollTop);
+  };
+
   const sideMenu = (
     <aside className="menu column is-4">
-      <ul id="side-menu-list" className="menu-list side-menu-list">
+      <ul
+        id="side-menu-list"
+        className="menu-list side-menu-list"
+        onScroll={onscroll}
+        ref={sideMenuListRef}
+      >
         <li>
           <a
             className={selectedSeconds === "ALL" ? "is-active" : ""}

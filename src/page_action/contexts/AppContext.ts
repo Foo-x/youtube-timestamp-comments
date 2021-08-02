@@ -16,6 +16,10 @@ export const ScrollContext = React.createContext<
   [number, (scroll: number) => void]
 >([0, () => {}]);
 
+export const SideMenuScrollContext = React.createContext<
+  [number, (sideMenuScroll: number) => void]
+>([0, () => {}]);
+
 export const SelectedSecondsContext = React.createContext<
   [SelectedSeconds, (selectedSeconds: SelectedSeconds) => void]
 >(["ALL", () => {}]);

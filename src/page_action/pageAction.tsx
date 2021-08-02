@@ -18,6 +18,7 @@ import {
   ScrollContext,
   Second2CommentsContext,
   SelectedSecondsContext,
+  SideMenuScrollContext,
   TotalCountContext,
 } from "./contexts/AppContext";
 import { sendMessage } from "./modules/ChromeTabs";
@@ -32,6 +33,7 @@ const PageAction = () => {
   const [isLast, setIsLast] = useState(true);
   const [isProgress, setIsProgress] = useState(false);
   const [scroll, setScroll] = useState(0);
+  const [sideMenuScroll, setSideMenuScroll] = useState(0);
   const [selectedSeconds, setSelectedSeconds] =
     useState<SelectedSeconds>("ALL");
 
@@ -54,6 +56,7 @@ const PageAction = () => {
       }
       if (msg.type === "view-props") {
         setScroll(msg.data.scroll);
+        setSideMenuScroll(msg.data.sideMenuScroll);
         setSelectedSeconds(msg.data.selectedSeconds);
         return;
       }
@@ -68,12 +71,12 @@ const PageAction = () => {
         type: "save-view-props",
         data: {
           scroll: location.pathname === "/" ? window.scrollY : scroll,
+          sideMenuScroll,
           selectedSeconds,
-          sideMenuScroll: 0,
         },
       });
     };
-  }, [location.pathname, scroll, selectedSeconds]);
+  }, [location.pathname, scroll, sideMenuScroll, selectedSeconds]);
   useEffect(() => {
     if (location.pathname === "/") {
       window.scroll(0, scroll);
@@ -87,13 +90,17 @@ const PageAction = () => {
           <IsLastContext.Provider value={isLast}>
             <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
               <ScrollContext.Provider value={[scroll, setScroll]}>
-                <SelectedSecondsContext.Provider
-                  value={[selectedSeconds, setSelectedSeconds]}
+                <SideMenuScrollContext.Provider
+                  value={[sideMenuScroll, setSideMenuScroll]}
                 >
-                  <Route exact path="/">
-                    <MainPage />
-                  </Route>
-                </SelectedSecondsContext.Provider>
+                  <SelectedSecondsContext.Provider
+                    value={[selectedSeconds, setSelectedSeconds]}
+                  >
+                    <Route exact path="/">
+                      <MainPage />
+                    </Route>
+                  </SelectedSecondsContext.Provider>
+                </SideMenuScrollContext.Provider>
               </ScrollContext.Provider>
             </IsProgressContext.Provider>
           </IsLastContext.Provider>
