@@ -3,11 +3,9 @@ import { getApiKey } from "../modules/ChromeStorage";
 // MODEL
 
 type WithVideoId = { state: "with-video-id"; videoId: VideoId };
-type WithApiKey = { state: "with-api-key"; videoId: VideoId; key: ApiKey };
 type WithPageToken = {
   state: "with-page-token";
   videoId: VideoId;
-  key: ApiKey;
   pageToken: string;
   s2c: Second2Comments;
   totalCount: number;
@@ -16,24 +14,16 @@ type WithPageToken = {
 type LastPageLoaded = {
   state: "last-page-loaded";
   videoId: VideoId;
-  key: ApiKey;
   s2c: Second2Comments;
   totalCount: number;
   viewProps?: ViewProps;
 };
-type Model = WithVideoId | WithApiKey | WithPageToken | LastPageLoaded;
+type Model = WithVideoId | WithPageToken | LastPageLoaded;
 
 let model: Model = {
   state: "with-video-id",
   videoId: new URLSearchParams(document.location.search).get("v")! as VideoId,
 };
-const init = async () => {
-  const key = (await getApiKey()) as ApiKey | undefined;
-  if (key) {
-    model = { state: "with-api-key", videoId: model.videoId, key };
-  }
-};
-init();
 
 // UPDATE
 
@@ -70,10 +60,6 @@ const sendViewPropsResponseIfExists = (
 
 const onCache = async () => {
   if (model.state === "with-video-id") {
-    // TODO: error handling
-    return;
-  }
-  if (model.state === "with-api-key") {
     update({ type: "next-page" });
     return;
   }
@@ -176,15 +162,17 @@ const createS2C = (comments: string[]): Second2Comments => {
 };
 
 const onNextPage = async () => {
-  if (model.state === "with-video-id" || model.state === "last-page-loaded") {
+  if (model.state === "last-page-loaded") {
     // TODO: error handling
     return;
   }
-  if (model.state === "with-api-key") {
-    const pageResult = await fetchNextPage(
-      createUrl(model.videoId, model.key),
-      0
-    );
+  const key = (await getApiKey()) as ApiKey | undefined;
+  if (key === undefined) {
+    // TODO: error handling
+    return;
+  }
+  if (model.state === "with-video-id") {
+    const pageResult = await fetchNextPage(createUrl(model.videoId, key), 0);
     if (pageResult === undefined) {
       // TODO: error handling
       return;
@@ -194,7 +182,6 @@ const onNextPage = async () => {
       ? {
           state: "with-page-token",
           videoId: model.videoId,
-          key: model.key,
           s2c,
           totalCount: pageResult.totalCount,
           pageToken: pageResult.pageToken,
@@ -202,7 +189,6 @@ const onNextPage = async () => {
       : {
           state: "last-page-loaded",
           videoId: model.videoId,
-          key: model.key,
           s2c,
           totalCount: pageResult.totalCount,
         };
@@ -211,7 +197,7 @@ const onNextPage = async () => {
   }
 
   const pageResult = await fetchNextPage(
-    createUrl(model.videoId, model.key, model.pageToken),
+    createUrl(model.videoId, key, model.pageToken),
     model.totalCount
   );
   if (pageResult === undefined) {
@@ -224,7 +210,6 @@ const onNextPage = async () => {
     ? {
         state: "with-page-token",
         videoId: model.videoId,
-        key: model.key,
         s2c,
         totalCount: pageResult.totalCount,
         pageToken: pageResult.pageToken,
@@ -233,7 +218,6 @@ const onNextPage = async () => {
     : {
         state: "last-page-loaded",
         videoId: model.videoId,
-        key: model.key,
         s2c,
         totalCount: pageResult.totalCount,
         viewProps,
