@@ -255,8 +255,6 @@ const onNextPage = async () => {
 };
 
 const update = async (msg: MsgToCS) => {
-  console.log(msg);
-  console.log(model);
   if (msg.type === "cache") {
     onCache();
     return;

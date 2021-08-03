@@ -43,7 +43,6 @@ const PageAction = () => {
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
-      console.log(msg);
       if (msg.type === "page") {
         setTotalCount(msg.totalCount);
         setS2C(
