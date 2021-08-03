@@ -58,7 +58,15 @@ const sendViewPropsResponseIfExists = (
   }
 };
 
+const sendErrorResponse = (errorType: ErrorType) => {
+  sendResponse({ type: "error", data: errorType });
+};
+
 const onCache = async () => {
+  if (model.state === "with-video-id" && !(await getApiKey())) {
+    sendErrorResponse("invalid-api-key");
+    return;
+  }
   if (model.state === "with-video-id") {
     update({ type: "next-page" });
     return;
@@ -92,11 +100,18 @@ type PageResult = {
 const fetchNextPage = async (
   url: URL,
   currentCount: number
-): Promise<PageResult | undefined> => {
+): Promise<PageResult | ErrorType> => {
   const res = await fetch(url.toString());
   if (!res.ok) {
-    // TODO: error handling
-    return;
+    const reason = (await res.json()).error.errors[0].reason;
+    switch (reason) {
+      case "commentsDisabled":
+        return "comments-disabled";
+      case "forbidden":
+        return "invalid-api-key";
+      default:
+        return "unknown";
+    }
   }
 
   const resJson = await res.json();
@@ -163,18 +178,26 @@ const createS2C = (comments: string[]): Second2Comments => {
 
 const onNextPage = async () => {
   if (model.state === "last-page-loaded") {
-    // TODO: error handling
+    sendPageResponse(model);
     return;
   }
   const key = (await getApiKey()) as ApiKey | undefined;
-  if (key === undefined) {
-    // TODO: error handling
+  if (!key) {
+    sendErrorResponse("invalid-api-key");
     return;
   }
   if (model.state === "with-video-id") {
     const pageResult = await fetchNextPage(createUrl(model.videoId, key), 0);
-    if (pageResult === undefined) {
-      // TODO: error handling
+    if (pageResult === "comments-disabled") {
+      model = {
+        state: "last-page-loaded",
+        videoId: model.videoId,
+        s2c: new Map(),
+        totalCount: 0,
+      };
+    }
+    if (typeof pageResult === "string") {
+      sendErrorResponse(pageResult);
       return;
     }
     const s2c = createS2C(pageResult.comments);
@@ -200,8 +223,8 @@ const onNextPage = async () => {
     createUrl(model.videoId, key, model.pageToken),
     model.totalCount
   );
-  if (pageResult === undefined) {
-    // TODO: error handling
+  if (typeof pageResult === "string") {
+    sendErrorResponse(pageResult);
     return;
   }
   const s2c = mergeS2C(model.s2c, createS2C(pageResult.comments));
@@ -226,6 +249,8 @@ const onNextPage = async () => {
 };
 
 const update = async (msg: MsgToCS) => {
+  console.log(msg);
+  console.log(model);
   if (msg.type === "cache") {
     onCache();
     return;

@@ -60,6 +60,21 @@ const PageAction = () => {
         setSelectedSeconds(msg.data.selectedSeconds);
         return;
       }
+      if (msg.type === "error") {
+        setIsProgress(false);
+        if (msg.data === "comments-disabled") {
+          setTotalCount(0);
+          setS2C(new Map());
+          setIsLast(true);
+          return;
+        }
+        if (msg.data === "unknown") {
+          setIsLast(true);
+          return;
+        }
+        // TODO: api key error handling
+        return;
+      }
     });
 
     setIsProgress(true);

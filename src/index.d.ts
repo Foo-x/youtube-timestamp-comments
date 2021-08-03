@@ -2,6 +2,7 @@ type ApiKey = string & { readonly _: unique symbol };
 type VideoId = string & { readonly _: unique symbol };
 type Second2Comments = Map<number, string[]>;
 type SelectedSeconds = "ALL" | number;
+type ErrorType = "invalid-api-key" | "comments-disabled" | "unknown";
 
 type ViewProps = {
   scroll: number;
@@ -23,4 +24,5 @@ type PageToPA = {
   isLast: boolean;
 };
 type ViewPropsToPA = { type: "view-props"; data: ViewProps };
-type MsgToPA = PageToPA | ViewPropsToPA;
+type ErrorToPA = { type: "error"; data: ErrorType };
+type MsgToPA = PageToPA | ViewPropsToPA | ErrorToPA;
