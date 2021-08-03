@@ -20,10 +20,11 @@ type LastPageLoaded = {
 };
 type Model = WithVideoId | WithPageToken | LastPageLoaded;
 
-let model: Model = {
+const init = (): WithVideoId => ({
   state: "with-video-id",
   videoId: new URLSearchParams(document.location.search).get("v")! as VideoId,
-};
+});
+let model: Model = init();
 
 // UPDATE
 
@@ -63,6 +64,10 @@ const sendErrorResponse = (errorType: ErrorType) => {
 };
 
 const onCache = async () => {
+  const newModel = init();
+  if (model.videoId !== newModel.videoId) {
+    model = newModel;
+  }
   if (model.state === "with-video-id" && !(await getApiKey())) {
     sendErrorResponse("invalid-api-key");
     return;
