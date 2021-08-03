@@ -54,6 +54,6 @@ Note that this extension will not collect your API key.
     2. Click the icon of this extension, and click the cog icon.
     3. Paste the API key you copied into the field.
 
-The set up is done. Click the `>` button on the extension and you will retrieve comments.
+The set up is done. Click the cog icon again, click `>` button and you will retrieve comments.
 
 Note that each API key can retrieve up to 100 comments 10,000 times per day.
