@@ -30,7 +30,7 @@ const PageAction = () => {
 
   const [totalCount, setTotalCount] = useState(0);
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
-  const [isLast, setIsLast] = useState(true);
+  const [isLast, setIsLast] = useState(false);
   const [isProgress, setIsProgress] = useState(false);
   const [scroll, setScroll] = useState(0);
   const [sideMenuScroll, setSideMenuScroll] = useState(0);
