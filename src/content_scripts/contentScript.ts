@@ -113,6 +113,7 @@ const fetchNextPage = async (
       case "commentsDisabled":
         return "comments-disabled";
       case "forbidden":
+      case "badRequest":
         return "invalid-api-key";
       default:
         return "unknown";
