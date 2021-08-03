@@ -1,5 +1,6 @@
-import { useEffect, useReducer } from "react";
+import { useContext, useEffect, useReducer } from "react";
 import { getApiKey, setApiKey } from "../../modules/ChromeStorage";
+import { IsApiKeyInvalidContext } from "../contexts/AppContext";
 
 const apiKeyReducer = (_: string, newKey: string): string => {
   setApiKey(newKey);
@@ -8,6 +9,9 @@ const apiKeyReducer = (_: string, newKey: string): string => {
 
 const Config = () => {
   const [key, dispatch] = useReducer(apiKeyReducer, "");
+  const [isApiKeyInvalid, setIsApiKeyInvalid] = useContext(
+    IsApiKeyInvalidContext
+  );
 
   useEffect(() => {
     (async () => {
@@ -18,6 +22,9 @@ const Config = () => {
   return (
     <main className="config main-container" role="main">
       <section className="section">
+        <div className="error-message">
+          {isApiKeyInvalid ? "Set a valid API key." : ""}
+        </div>
         <div className="field">
           <label className="label" htmlFor="api-key-input">
             API Key
@@ -31,7 +38,10 @@ const Config = () => {
               placeholder="AIza..."
               value={key}
               onFocus={(event) => event.currentTarget.select()}
-              onInput={(event) => dispatch(event.currentTarget.value)}
+              onInput={(event) => {
+                setIsApiKeyInvalid(false);
+                dispatch(event.currentTarget.value);
+              }}
             />
           </div>
         </div>

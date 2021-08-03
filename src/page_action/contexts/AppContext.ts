@@ -23,3 +23,7 @@ export const SideMenuScrollContext = React.createContext<
 export const SelectedSecondsContext = React.createContext<
   [SelectedSeconds, (selectedSeconds: SelectedSeconds) => void]
 >(["ALL", () => {}]);
+
+export const IsApiKeyInvalidContext = React.createContext<
+  [boolean, (isApiKeyInvalid: boolean) => void]
+>([false, () => {}]);

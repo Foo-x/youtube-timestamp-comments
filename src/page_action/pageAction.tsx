@@ -14,6 +14,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import {
+  IsApiKeyInvalidContext,
   IsLastContext,
   IsProgressContext,
   ScrollContext,
@@ -38,6 +39,7 @@ const PageAction = () => {
   const [sideMenuScroll, setSideMenuScroll] = useState(0);
   const [selectedSeconds, setSelectedSeconds] =
     useState<SelectedSeconds>("ALL");
+  const [isApiKeyInvalid, setIsApiKeyInvalid] = useState(true);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
@@ -74,6 +76,7 @@ const PageAction = () => {
           setIsLast(true);
           return;
         }
+        setIsApiKeyInvalid(true);
         history.push("/config");
         return;
       }
@@ -124,7 +127,11 @@ const PageAction = () => {
           </IsLastContext.Provider>
         </Second2CommentsContext.Provider>
       </TotalCountContext.Provider>
-      <Route exact path="/config" component={ConfigPage} />
+      <IsApiKeyInvalidContext.Provider
+        value={[isApiKeyInvalid, setIsApiKeyInvalid]}
+      >
+        <Route exact path="/config" component={ConfigPage} />
+      </IsApiKeyInvalidContext.Provider>
     </>
   );
 };

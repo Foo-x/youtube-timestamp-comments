@@ -82,3 +82,13 @@
 .icon.active {
   color: #485fc7;
 }
+
+.error-message {
+  height: 2rem;
+  text-align: center;
+  color: #f14668;
+}
+
+.section {
+  padding: 1rem 1.5rem;
+}
