@@ -78,3 +78,7 @@
   content: "|";
   padding: 0 0.5rem;
 }
+
+.icon.active {
+  color: #485fc7;
+}
