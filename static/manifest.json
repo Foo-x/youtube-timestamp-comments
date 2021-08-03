@@ -22,5 +22,5 @@
       "js": ["js/content_scripts/contentScript.js"]
     }
   ],
-  "permissions": ["declarativeContent", "storage"]
+  "permissions": ["declarativeContent", "storage", "activeTab"]
 }
