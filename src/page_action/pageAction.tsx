@@ -39,7 +39,7 @@ const PageAction = () => {
   const [sideMenuScroll, setSideMenuScroll] = useState(0);
   const [selectedSeconds, setSelectedSeconds] =
     useState<SelectedSeconds>("ALL");
-  const [isApiKeyInvalid, setIsApiKeyInvalid] = useState(true);
+  const [isApiKeyInvalid, setIsApiKeyInvalid] = useState(false);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
