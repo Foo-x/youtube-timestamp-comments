@@ -26,7 +26,6 @@
   "devDependencies": {
     "@babel/core": "^7.14.6",
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@parcel/transformer-elm": "^2.0.0-nightly.2393",
     "@types/chrome": "^0.0.86",
     "@types/node": "^16.3.3",
     "@types/react": "^17.0.14",
@@ -34,10 +33,7 @@
     "@types/react-router-dom": "^5.1.8",
     "bulma": "^0.9.3",
     "bulma-divider": "^0.2.0",
-    "elm": "^0.19.1-5",
-    "elm-hot": "^1.1.6",
     "eslint-config-prettier": "^8.3.0",
-    "node-elm-compiler": "^5.0.6",
     "nodemon": "^1.19.1",
     "parcel": "^2.0.0-beta.3.1",
     "prettier": "^2.3.2",
