@@ -10,6 +10,7 @@ import {
   MemoryRouter as Router,
   Route,
   Switch,
+  useHistory,
   useLocation,
 } from "react-router-dom";
 import {
@@ -27,6 +28,7 @@ import MainPage from "./pages/MainPage";
 
 const PageAction = () => {
   const location = useLocation();
+  const history = useHistory();
 
   const [totalCount, setTotalCount] = useState(0);
   const [s2c, setS2C] = useState<Second2Comments>(new Map());
@@ -72,13 +74,14 @@ const PageAction = () => {
           setIsLast(true);
           return;
         }
-        // TODO: api key error handling
+        history.push("/config");
         return;
       }
     });
 
     setIsProgress(true);
     sendMessage({ type: "cache" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     window.onblur = () => {

@@ -68,3 +68,13 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+.setup {
+  display: flex;
+  justify-content: center;
+}
+
+.setup li:not(:first-of-type):before {
+  content: "|";
+  padding: 0 0.5rem;
+}

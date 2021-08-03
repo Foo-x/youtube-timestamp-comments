@@ -35,6 +35,26 @@ const Config = () => {
             />
           </div>
         </div>
+        <ul className="setup">
+          <li>
+            <a
+              href="https://github.com/Foo-x/youtube-timestamp-comments/blob/master/README.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Set up
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/Foo-x/youtube-timestamp-comments/blob/master/README.ja.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              設定
+            </a>
+          </li>
+        </ul>
       </section>
     </main>
   );
