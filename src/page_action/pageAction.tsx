@@ -23,7 +23,7 @@ import {
   SideMenuScrollContext,
   TotalCountContext,
 } from "./contexts/AppContext";
-import { sendMessage } from "./modules/ChromeTabs";
+import { initContentScript, sendMessage } from "./modules/ChromeTabs";
 import ConfigPage from "./pages/ConfigPage";
 import MainPage from "./pages/MainPage";
 
@@ -82,7 +82,9 @@ const PageAction = () => {
     });
 
     setIsProgress(true);
-    sendMessage({ type: "cache" });
+    initContentScript().then(() => {
+      sendMessage({ type: "cache" });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
