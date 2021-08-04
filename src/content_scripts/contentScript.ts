@@ -143,14 +143,18 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       return [];
     }
 
-    return timestamps.map((timestamp) => {
-      const [first, second, third] = timestamp.split(":");
-      const [h, m, s] =
-        third === undefined
-          ? [0, parseInt(first), parseInt(second)]
-          : [parseInt(first), parseInt(second), parseInt(third)];
-      return h * 3600 + m * 60 + s;
-    });
+    return Array.from(
+      new Set(
+        timestamps.map((timestamp) => {
+          const [first, second, third] = timestamp.split(":");
+          const [h, m, s] =
+            third === undefined
+              ? [0, parseInt(first), parseInt(second)]
+              : [parseInt(first), parseInt(second), parseInt(third)];
+          return h * 3600 + m * 60 + s;
+        })
+      )
+    );
   };
 
   const mergeS2C = (
