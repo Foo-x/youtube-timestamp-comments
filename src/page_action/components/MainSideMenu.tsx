@@ -1,18 +1,16 @@
 import { useContext, useEffect, useRef } from "react";
 import {
-  Second2CommentsContext,
-  SelectedSecondsContext,
+  FetchedCommentsContext,
+  SelectedIdContext,
   SideMenuScrollContext,
 } from "../contexts/AppContext";
-import { secToTimeStr } from "../entities/Second2Comments";
+import { secToTimeStr } from "../entities/Time";
 import { updateTime } from "../modules/ChromeTabs";
 
 const MainSideMenu = () => {
-  const s2c = useContext(Second2CommentsContext);
+  const fetchedComments = useContext(FetchedCommentsContext);
   const [sideMenuScroll, setSideMenuScroll] = useContext(SideMenuScrollContext);
-  const [selectedSeconds, setSelectedSeconds] = useContext(
-    SelectedSecondsContext
-  );
+  const [selectedId, setSelectedId] = useContext(SelectedIdContext);
 
   const sideMenuListRef = useRef<HTMLUListElement>(null);
 
@@ -34,23 +32,23 @@ const MainSideMenu = () => {
       >
         <li>
           <a
-            className={selectedSeconds === "ALL" ? "is-active" : ""}
-            onClick={() => setSelectedSeconds("ALL")}
+            className={selectedId === "ALL" ? "is-active" : ""}
+            onClick={() => setSelectedId("ALL")}
           >
             ALL
           </a>
         </li>
-        {Array.from(s2c.keys(), (key) => {
-          const timeStr = secToTimeStr(key);
+        {fetchedComments.secondCommentIndexPairs.map(([sec], id) => {
+          const timeStr = secToTimeStr(sec);
           const button =
-            selectedSeconds === key ? (
-              <a className="is-active" onClick={() => updateTime(key)}>
+            selectedId === id ? (
+              <a className="is-active" onClick={() => updateTime(sec)}>
                 {timeStr}
               </a>
             ) : (
-              <a onClick={() => setSelectedSeconds(key)}>{timeStr}</a>
+              <a onClick={() => setSelectedId(id)}>{timeStr}</a>
             );
-          return <li key={key}>{button}</li>;
+          return <li key={id}>{button}</li>;
         })}
       </ul>
     </aside>

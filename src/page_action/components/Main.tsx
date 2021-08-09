@@ -1,26 +1,38 @@
 import { useContext } from "react";
 import {
-  Second2CommentsContext,
-  SelectedSecondsContext,
+  FetchedCommentsContext,
+  SelectedIdContext,
 } from "../contexts/AppContext";
-import { secToTimeStr } from "../entities/Second2Comments";
+import { secToTimeStr } from "../entities/Time";
 import { updateTime } from "../modules/ChromeTabs";
 import MainSideMenu from "./MainSideMenu";
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
 
-const uniqueComments = (s2c: Second2Comments): Second2Comments => {
-  const commentSet = new Set<string>();
-  const result = new Map<number, string[]>() as Second2Comments;
-
-  s2c.forEach((comments, sec) => {
-    const newComments = comments.filter((comment) => !commentSet.has(comment));
-    newComments.forEach((comment) => {
-      commentSet.add(comment);
-      result.set(sec, newComments);
-    });
+const uniqueIndices = (
+  fetchedComments: FetchedComments
+): [number, number][] => {
+  const indexSet = new Set<number>();
+  const result: [number, number][] = [];
+  fetchedComments.secondCommentIndexPairs.forEach(([sec, index]) => {
+    if (indexSet.has(index)) {
+      return;
+    }
+    indexSet.add(index);
+    result.push([sec, index]);
   });
+  return result;
+};
 
+const createS2C = (secondCommentPairs: [number, string][]): Second2Comments => {
+  const result = new Map<number, string[]>();
+  secondCommentPairs.forEach(([sec, comment]) => {
+    if (result.has(sec)) {
+      result.set(sec, [...result.get(sec)!, comment]);
+      return;
+    }
+    result.set(sec, [comment]);
+  });
   return result;
 };
 
@@ -94,15 +106,27 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
 };
 
 const Main = () => {
-  const s2c = useContext(Second2CommentsContext);
-  const [selectedSeconds] = useContext(SelectedSecondsContext);
+  const fetchedComments = useContext(FetchedCommentsContext);
+  const [selectedId] = useContext(SelectedIdContext);
 
   const content =
-    selectedSeconds === "ALL"
-      ? Array.from(uniqueComments(s2c).entries()).map(([sec, comments]) =>
-          s2cToCommentCards(sec, comments)
-        )
-      : s2cToCommentCards(selectedSeconds, s2c.get(selectedSeconds)!);
+    selectedId === "ALL"
+      ? Array.from(
+          createS2C(
+            uniqueIndices(fetchedComments).map(([sec, index]) => [
+              sec,
+              fetchedComments.comments[index],
+            ])
+          ).entries()
+        ).map(([sec, comments]) => s2cToCommentCards(sec, comments))
+      : s2cToCommentCards(
+          fetchedComments.secondCommentIndexPairs[selectedId][0],
+          [
+            fetchedComments.comments[
+              fetchedComments.secondCommentIndexPairs[selectedId][1]
+            ],
+          ]
+        );
 
   return (
     <main className="columns is-mobile is-gapless main-container" role="main">

@@ -14,12 +14,12 @@ import {
   useLocation,
 } from "react-router-dom";
 import {
+  FetchedCommentsContext,
   IsApiKeyInvalidContext,
   IsLastContext,
   IsProgressContext,
   ScrollContext,
-  Second2CommentsContext,
-  SelectedSecondsContext,
+  SelectedIdContext,
   SideMenuScrollContext,
   TotalCountContext,
 } from "./contexts/AppContext";
@@ -32,27 +32,22 @@ const PageAction = () => {
   const history = useHistory();
 
   const [totalCount, setTotalCount] = useState(0);
-  const [s2c, setS2C] = useState<Second2Comments>(new Map());
+  const [fetchedComments, setFetchedComments] = useState<FetchedComments>({
+    comments: [],
+    secondCommentIndexPairs: [],
+  });
   const [isLast, setIsLast] = useState(false);
   const [isProgress, setIsProgress] = useState(false);
   const [scroll, setScroll] = useState(0);
   const [sideMenuScroll, setSideMenuScroll] = useState(0);
-  const [selectedSeconds, setSelectedSeconds] =
-    useState<SelectedSeconds>("ALL");
+  const [selectedId, setSelectedId] = useState<SelectedId>("ALL");
   const [isApiKeyInvalid, setIsApiKeyInvalid] = useState(false);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
       if (msg.type === "page") {
         setTotalCount(msg.totalCount);
-        setS2C(
-          new Map(
-            Object.entries(msg.data).map(([sec, comments]) => [
-              parseInt(sec),
-              comments,
-            ])
-          )
-        );
+        setFetchedComments(msg.data);
         setIsLast(msg.isLast);
         setIsProgress(false);
         return;
@@ -60,14 +55,13 @@ const PageAction = () => {
       if (msg.type === "view-props") {
         setScroll(msg.data.scroll);
         setSideMenuScroll(msg.data.sideMenuScroll);
-        setSelectedSeconds(msg.data.selectedSeconds);
+        setSelectedId(msg.data.selectedId);
         return;
       }
       if (msg.type === "error") {
         setIsProgress(false);
         if (msg.data === "comments-disabled") {
           setTotalCount(0);
-          setS2C(new Map());
           setIsLast(true);
           return;
         }
@@ -94,11 +88,11 @@ const PageAction = () => {
         data: {
           scroll: location.pathname === "/" ? window.scrollY : scroll,
           sideMenuScroll,
-          selectedSeconds,
+          selectedId,
         },
       });
     };
-  }, [location.pathname, scroll, sideMenuScroll, selectedSeconds]);
+  }, [location.pathname, scroll, sideMenuScroll, selectedId]);
   useEffect(() => {
     if (location.pathname === "/") {
       window.scroll(0, scroll);
@@ -108,25 +102,25 @@ const PageAction = () => {
   return (
     <>
       <TotalCountContext.Provider value={totalCount}>
-        <Second2CommentsContext.Provider value={s2c}>
+        <FetchedCommentsContext.Provider value={fetchedComments}>
           <IsLastContext.Provider value={isLast}>
             <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
               <ScrollContext.Provider value={[scroll, setScroll]}>
                 <SideMenuScrollContext.Provider
                   value={[sideMenuScroll, setSideMenuScroll]}
                 >
-                  <SelectedSecondsContext.Provider
-                    value={[selectedSeconds, setSelectedSeconds]}
+                  <SelectedIdContext.Provider
+                    value={[selectedId, setSelectedId]}
                   >
                     <Route exact path="/">
                       <MainPage />
                     </Route>
-                  </SelectedSecondsContext.Provider>
+                  </SelectedIdContext.Provider>
                 </SideMenuScrollContext.Provider>
               </ScrollContext.Provider>
             </IsProgressContext.Provider>
           </IsLastContext.Provider>
-        </Second2CommentsContext.Provider>
+        </FetchedCommentsContext.Provider>
       </TotalCountContext.Provider>
       <IsApiKeyInvalidContext.Provider
         value={[isApiKeyInvalid, setIsApiKeyInvalid]}

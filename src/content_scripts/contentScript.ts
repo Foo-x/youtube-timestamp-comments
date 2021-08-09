@@ -1,6 +1,6 @@
 import { getApiKey } from "../modules/ChromeStorage";
 import { createUrl, fetchNextPage } from "./apis/YouTubeDataApi";
-import { createS2C, mergeS2C } from "./entities/Second2Comments";
+import { createFetchedComments } from "./entities/FetchedComments";
 
 if (!chrome.runtime.onMessage.hasListeners()) {
   // MODEL
@@ -10,14 +10,14 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     state: "with-page-token";
     videoId: VideoId;
     pageToken: string;
-    s2c: Second2Comments;
+    fetchedSeconds: FetchedComments;
     totalCount: number;
     viewProps?: ViewProps;
   };
   type LastPageLoaded = {
     state: "last-page-loaded";
     videoId: VideoId;
-    s2c: Second2Comments;
+    fetchedSeconds: FetchedComments;
     totalCount: number;
     viewProps?: ViewProps;
   };
@@ -36,18 +36,17 @@ if (!chrome.runtime.onMessage.hasListeners()) {
   };
 
   const sendPageResponse = (model: WithPageToken | LastPageLoaded) => {
-    const s2c = Object.fromEntries(model.s2c);
     if (model.state === "with-page-token") {
       sendResponse({
         type: "page",
-        data: s2c,
+        data: model.fetchedSeconds,
         totalCount: model.totalCount,
         isLast: false,
       });
     } else {
       sendResponse({
         type: "page",
-        data: s2c,
+        data: model.fetchedSeconds,
         totalCount: model.totalCount,
         isLast: true,
       });
@@ -92,7 +91,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       model = {
         state: "last-page-loaded",
         videoId: model.videoId,
-        s2c: new Map(),
+        fetchedSeconds: { comments: [], secondCommentIndexPairs: [] },
         totalCount: 0,
       };
     }
@@ -100,19 +99,19 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       sendErrorResponse(pageResult);
       return;
     }
-    const s2c = createS2C(pageResult.comments);
+    const fetchedSeconds = createFetchedComments(pageResult.comments);
     model = pageResult.pageToken
       ? {
           state: "with-page-token",
           videoId: model.videoId,
-          s2c,
+          fetchedSeconds,
           totalCount: pageResult.totalCount,
           pageToken: pageResult.pageToken,
         }
       : {
           state: "last-page-loaded",
           videoId: model.videoId,
-          s2c,
+          fetchedSeconds,
           totalCount: pageResult.totalCount,
         };
     sendPageResponse(model);
@@ -141,13 +140,16 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       sendErrorResponse(pageResult);
       return;
     }
-    const s2c = mergeS2C(model.s2c, createS2C(pageResult.comments));
+    const fetchedSeconds = createFetchedComments([
+      ...model.fetchedSeconds.comments,
+      ...pageResult.comments,
+    ]);
     const viewProps = model.viewProps;
     model = pageResult.pageToken
       ? {
           state: "with-page-token",
           videoId: model.videoId,
-          s2c,
+          fetchedSeconds,
           totalCount: pageResult.totalCount,
           pageToken: pageResult.pageToken,
           viewProps,
@@ -155,7 +157,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       : {
           state: "last-page-loaded",
           videoId: model.videoId,
-          s2c,
+          fetchedSeconds,
           totalCount: pageResult.totalCount,
           viewProps,
         };

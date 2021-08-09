@@ -2,9 +2,10 @@ import React from "react";
 
 export const TotalCountContext = React.createContext(0);
 
-export const Second2CommentsContext = React.createContext<Second2Comments>(
-  new Map()
-);
+export const FetchedCommentsContext = React.createContext<FetchedComments>({
+  comments: [],
+  secondCommentIndexPairs: [],
+});
 
 export const IsLastContext = React.createContext(false);
 
@@ -20,8 +21,8 @@ export const SideMenuScrollContext = React.createContext<
   [number, (sideMenuScroll: number) => void]
 >([0, () => {}]);
 
-export const SelectedSecondsContext = React.createContext<
-  [SelectedSeconds, (selectedSeconds: SelectedSeconds) => void]
+export const SelectedIdContext = React.createContext<
+  [SelectedSeconds, (selectedSeconds: SelectedId) => void]
 >(["ALL", () => {}]);
 
 export const IsApiKeyInvalidContext = React.createContext<
