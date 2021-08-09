@@ -18,8 +18,7 @@ const MainSideMenu = () => {
 
   useEffect(() => {
     sideMenuListRef.current?.scroll(0, sideMenuScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sideMenuScroll]);
 
   const onscroll: React.UIEventHandler = (event) => {
     setSideMenuScroll(event.currentTarget.scrollTop);

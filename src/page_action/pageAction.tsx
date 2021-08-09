@@ -40,6 +40,7 @@ const PageAction = () => {
   const [isLast, setIsLast] = useState(false);
   const [isProgress, setIsProgress] = useState(false);
   const [scroll, setScroll] = useState(0);
+  const [cachedSideMenuScroll, setCachedSideMenuScroll] = useState(0);
   const [sideMenuScroll, setSideMenuScroll] = useState(0);
   const [selectedId, setSelectedId] = useState<SelectedId>("ALL");
   const [selectedSeconds, setSelectedSeconds] =
@@ -57,7 +58,7 @@ const PageAction = () => {
       }
       if (msg.type === "view-props") {
         setScroll(msg.data.scroll);
-        setSideMenuScroll(msg.data.sideMenuScroll);
+        setCachedSideMenuScroll(msg.data.sideMenuScroll);
         setSelectedId(msg.data.selectedId);
         return;
       }
@@ -110,7 +111,7 @@ const PageAction = () => {
             <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
               <ScrollContext.Provider value={[scroll, setScroll]}>
                 <SideMenuScrollContext.Provider
-                  value={[sideMenuScroll, setSideMenuScroll]}
+                  value={[cachedSideMenuScroll, setSideMenuScroll]}
                 >
                   <SelectedIdContext.Provider
                     value={[selectedId, setSelectedId]}
