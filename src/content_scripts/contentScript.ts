@@ -83,6 +83,41 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     sendViewPropsResponseIfExists(model);
   };
 
+  const onFirstPage = async () => {
+    const pageResult = await fetchNextPage(
+      createUrl(model.videoId, (await getApiKey()) as ApiKey),
+      0
+    );
+    if (pageResult === "comments-disabled") {
+      model = {
+        state: "last-page-loaded",
+        videoId: model.videoId,
+        s2c: new Map(),
+        totalCount: 0,
+      };
+    }
+    if (typeof pageResult === "string") {
+      sendErrorResponse(pageResult);
+      return;
+    }
+    const s2c = createS2C(pageResult.comments);
+    model = pageResult.pageToken
+      ? {
+          state: "with-page-token",
+          videoId: model.videoId,
+          s2c,
+          totalCount: pageResult.totalCount,
+          pageToken: pageResult.pageToken,
+        }
+      : {
+          state: "last-page-loaded",
+          videoId: model.videoId,
+          s2c,
+          totalCount: pageResult.totalCount,
+        };
+    sendPageResponse(model);
+  };
+
   const onNextPage = async () => {
     if (model.state === "last-page-loaded") {
       sendPageResponse(model);
@@ -94,35 +129,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       return;
     }
     if (model.state === "with-video-id") {
-      const pageResult = await fetchNextPage(createUrl(model.videoId, key), 0);
-      if (pageResult === "comments-disabled") {
-        model = {
-          state: "last-page-loaded",
-          videoId: model.videoId,
-          s2c: new Map(),
-          totalCount: 0,
-        };
-      }
-      if (typeof pageResult === "string") {
-        sendErrorResponse(pageResult);
-        return;
-      }
-      const s2c = createS2C(pageResult.comments);
-      model = pageResult.pageToken
-        ? {
-            state: "with-page-token",
-            videoId: model.videoId,
-            s2c,
-            totalCount: pageResult.totalCount,
-            pageToken: pageResult.pageToken,
-          }
-        : {
-            state: "last-page-loaded",
-            videoId: model.videoId,
-            s2c,
-            totalCount: pageResult.totalCount,
-          };
-      sendPageResponse(model);
+      onFirstPage();
       return;
     }
 
