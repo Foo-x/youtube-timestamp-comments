@@ -34,7 +34,10 @@ const MainSideMenu = () => {
         <li>
           <a
             className={selectedId === "ALL" ? "is-active" : ""}
-            onClick={() => setSelectedId("ALL")}
+            onClick={() => {
+              setSelectedId("ALL");
+              window.scroll(0, 0);
+            }}
           >
             ALL
           </a>
@@ -47,7 +50,14 @@ const MainSideMenu = () => {
                 {timeStr}
               </a>
             ) : (
-              <a onClick={() => setSelectedId(id)}>{timeStr}</a>
+              <a
+                onClick={() => {
+                  setSelectedId(id);
+                  window.scroll(0, 0);
+                }}
+              >
+                {timeStr}
+              </a>
             );
           return <li key={id}>{button}</li>;
         })}
