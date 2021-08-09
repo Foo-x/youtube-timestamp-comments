@@ -20,3 +20,9 @@ export const initContentScript = () => {
     })
   );
 };
+
+export const updateTime = (sec: number) => {
+  chrome.tabs.executeScript({
+    code: `document.querySelector('video').currentTime = ${sec}`,
+  });
+};

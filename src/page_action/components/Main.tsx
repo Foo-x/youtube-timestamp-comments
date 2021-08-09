@@ -1,17 +1,13 @@
-import React, { useContext, useEffect, useRef } from "react";
+import { useContext } from "react";
 import {
   Second2CommentsContext,
   SelectedSecondsContext,
-  SideMenuScrollContext,
 } from "../contexts/AppContext";
+import { secToTimeStr } from "../entities/Second2Comments";
+import { updateTime } from "../modules/ChromeTabs";
+import MainSideMenu from "./MainSideMenu";
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
-
-const updateTime = (sec: number) => {
-  chrome.tabs.executeScript({
-    code: `document.querySelector('video').currentTime = ${sec}`,
-  });
-};
 
 const uniqueComments = (s2c: Second2Comments): Second2Comments => {
   const commentSet = new Set<string>();
@@ -26,19 +22,6 @@ const uniqueComments = (s2c: Second2Comments): Second2Comments => {
   });
 
   return result;
-};
-
-const secToTimeStr = (sec: number): string => {
-  const hours = Math.floor(sec / 3600);
-  const minutes = Math.floor((sec % 3600) / 60);
-  const seconds = sec % 60;
-
-  return hours === 0
-    ? `${minutes}:${("" + seconds).padStart(2, "0")}`
-    : `${hours}:${("" + minutes).padStart(2, "0")}:${("" + seconds).padStart(
-        2,
-        "0"
-      )}`;
 };
 
 const timestampToSeconds = (timestamp: string): number => {
@@ -112,52 +95,8 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
 
 const Main = () => {
   const s2c = useContext(Second2CommentsContext);
-  const [sideMenuScroll, setSideMenuScroll] = useContext(SideMenuScrollContext);
-  const [selectedSeconds, setSelectedSeconds] = useContext(
-    SelectedSecondsContext
-  );
+  const [selectedSeconds] = useContext(SelectedSecondsContext);
 
-  const sideMenuListRef = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    sideMenuListRef.current?.scroll(0, sideMenuScroll);
-  }, [sideMenuScroll]);
-
-  const onscroll: React.UIEventHandler = (event) => {
-    setSideMenuScroll(event.currentTarget.scrollTop);
-  };
-
-  const sideMenu = (
-    <aside className="menu column is-4">
-      <ul
-        id="side-menu-list"
-        className="menu-list side-menu-list"
-        onScroll={onscroll}
-        ref={sideMenuListRef}
-      >
-        <li>
-          <a
-            className={selectedSeconds === "ALL" ? "is-active" : ""}
-            onClick={() => setSelectedSeconds("ALL")}
-          >
-            ALL
-          </a>
-        </li>
-        {Array.from(s2c.keys(), (key) => {
-          const timeStr = secToTimeStr(key);
-          const button =
-            selectedSeconds === key ? (
-              <a className="is-active" onClick={() => updateTime(key)}>
-                {timeStr}
-              </a>
-            ) : (
-              <a onClick={() => setSelectedSeconds(key)}>{timeStr}</a>
-            );
-          return <li key={key}>{button}</li>;
-        })}
-      </ul>
-    </aside>
-  );
   const content =
     selectedSeconds === "ALL"
       ? Array.from(uniqueComments(s2c).entries()).map(([sec, comments]) =>
@@ -167,7 +106,7 @@ const Main = () => {
 
   return (
     <main className="columns is-mobile is-gapless main-container" role="main">
-      {sideMenu}
+      <MainSideMenu />
       <section className="column is-8">{content}</section>
     </main>
   );
