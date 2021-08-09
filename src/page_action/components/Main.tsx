@@ -142,10 +142,9 @@ const Main = () => {
       `[data-value="${selectedSeconds}"]`
     );
     if (timestampElement) {
-      window.scroll(
+      window.scrollBy(
         0,
-        timestampElement.getBoundingClientRect().top +
-          window.pageYOffset -
+        timestampElement.getBoundingClientRect().top -
           document.querySelector(".header")!.scrollHeight
       );
     }
