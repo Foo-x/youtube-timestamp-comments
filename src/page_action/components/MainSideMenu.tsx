@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import {
   FetchedCommentsContext,
   SelectedIdContext,
+  SelectedSecondsContext,
   SideMenuScrollContext,
 } from "../contexts/AppContext";
 import { secToTimeStr } from "../entities/Time";
@@ -11,6 +12,7 @@ const MainSideMenu = () => {
   const fetchedComments = useContext(FetchedCommentsContext);
   const [sideMenuScroll, setSideMenuScroll] = useContext(SideMenuScrollContext);
   const [selectedId, setSelectedId] = useContext(SelectedIdContext);
+  const setSelectedSeconds = useContext(SelectedSecondsContext)[1];
 
   const sideMenuListRef = useRef<HTMLUListElement>(null);
 
@@ -36,7 +38,7 @@ const MainSideMenu = () => {
             className={selectedId === "ALL" ? "is-active" : ""}
             onClick={() => {
               setSelectedId("ALL");
-              window.scroll(0, 0);
+              setSelectedSeconds("ALL");
             }}
           >
             ALL
@@ -53,7 +55,7 @@ const MainSideMenu = () => {
               <a
                 onClick={() => {
                   setSelectedId(id);
-                  window.scroll(0, 0);
+                  setSelectedSeconds(sec);
                 }}
               >
                 {timeStr}

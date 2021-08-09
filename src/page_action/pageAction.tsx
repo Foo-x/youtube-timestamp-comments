@@ -20,6 +20,7 @@ import {
   IsProgressContext,
   ScrollContext,
   SelectedIdContext,
+  SelectedSecondsContext,
   SideMenuScrollContext,
   TotalCountContext,
 } from "./contexts/AppContext";
@@ -41,6 +42,8 @@ const PageAction = () => {
   const [scroll, setScroll] = useState(0);
   const [sideMenuScroll, setSideMenuScroll] = useState(0);
   const [selectedId, setSelectedId] = useState<SelectedId>("ALL");
+  const [selectedSeconds, setSelectedSeconds] =
+    useState<SelectedSeconds>("ALL");
   const [isApiKeyInvalid, setIsApiKeyInvalid] = useState(false);
 
   useEffect(() => {
@@ -112,9 +115,13 @@ const PageAction = () => {
                   <SelectedIdContext.Provider
                     value={[selectedId, setSelectedId]}
                   >
-                    <Route exact path="/">
-                      <MainPage />
-                    </Route>
+                    <SelectedSecondsContext.Provider
+                      value={[selectedSeconds, setSelectedSeconds]}
+                    >
+                      <Route exact path="/">
+                        <MainPage />
+                      </Route>
+                    </SelectedSecondsContext.Provider>
                   </SelectedIdContext.Provider>
                 </SideMenuScrollContext.Provider>
               </ScrollContext.Provider>

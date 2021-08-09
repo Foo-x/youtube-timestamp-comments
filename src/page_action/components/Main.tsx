@@ -1,7 +1,8 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import {
   FetchedCommentsContext,
   SelectedIdContext,
+  SelectedSecondsContext,
 } from "../contexts/AppContext";
 import { secToTimeStr } from "../entities/Time";
 import { updateTime } from "../modules/ChromeTabs";
@@ -69,7 +70,11 @@ const replaceTimeLink = (comment: string): JSX.Element => {
     );
     const timestamp = currentMatch[0];
     const seconds = timestampToSeconds(timestamp);
-    resultArray.push(<a onClick={() => updateTime(seconds)}>{timestamp}</a>);
+    resultArray.push(
+      <a onClick={() => updateTime(seconds)} data-value={seconds}>
+        {timestamp}
+      </a>
+    );
     lastIndex = timestampPattern.lastIndex;
   }
   resultArray.push(replaceNewline(comment.slice(lastIndex)));
@@ -108,6 +113,7 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
 const Main = () => {
   const fetchedComments = useContext(FetchedCommentsContext);
   const [selectedId] = useContext(SelectedIdContext);
+  const [selectedSeconds] = useContext(SelectedSecondsContext);
 
   const content =
     selectedId === "ALL"
@@ -127,6 +133,24 @@ const Main = () => {
             ],
           ]
         );
+  useEffect(() => {
+    if (selectedId === "ALL") {
+      window.scroll(0, 0);
+      return;
+    }
+    const timestampElement = document.querySelector(
+      `[data-value="${selectedSeconds}"]`
+    );
+    if (timestampElement) {
+      window.scroll(
+        0,
+        timestampElement.getBoundingClientRect().top +
+          window.pageYOffset -
+          document.querySelector(".header")!.scrollHeight
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
 
   return (
     <main className="columns is-mobile is-gapless main-container" role="main">
