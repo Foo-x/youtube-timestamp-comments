@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.8.0] - 2022-02-02
+
+### Changed
+
+- Manifest version to 3.
+
+
 ## [v0.7.0] - 2021-08-09
 
 ### Added
@@ -30,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use YouTube Data API to fetch comments.
 
-[Unreleased]: https://github.com/Foo-x/youtube-timestamp-comments/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/Foo-x/youtube-timestamp-comments/compare/v0.8.0...HEAD
+[v0.8.0]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.8.0
 [v0.7.0]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.7.0
 [v0.6.4]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.6.4
