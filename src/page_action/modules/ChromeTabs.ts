@@ -10,10 +10,12 @@ export const sendMessage = (message: MsgToCS) => {
 export const initContentScript = () => {
   return new Promise<void>((resolve) =>
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.executeScript(
-        tabs[0].id!,
+      chrome.scripting.executeScript(
         {
-          file: "js/content_scripts/contentScript.js",
+          target: {
+            tabId: tabs[0].id!,
+          },
+          files: ["js/content_scripts/contentScript.js"],
         },
         () => resolve()
       );
@@ -22,7 +24,15 @@ export const initContentScript = () => {
 };
 
 export const updateTime = (sec: number) => {
-  chrome.tabs.executeScript({
-    code: `document.querySelector('video').currentTime = ${sec}`,
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: {
+        tabId: tabs[0].id!,
+      },
+      args: [sec],
+      func: (sec: number) => {
+        document.querySelector("video")!.currentTime = sec;
+      },
+    });
   });
 };

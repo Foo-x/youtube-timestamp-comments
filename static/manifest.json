@@ -1,7 +1,7 @@
 {
   "name": "YouTube Timestamp Comments",
   "version": "0.7.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "An extension that lists timestamp comments on YouTube.",
   "icons": {
     "16": "icons/icon16.png",
@@ -9,10 +9,9 @@
     "128": "icons/icon128.png"
   },
   "background": {
-    "scripts": ["js/background/background.js"],
-    "persistent": false
+    "service_worker": "js/background/background.js"
   },
-  "page_action": {
+  "action": {
     "default_icon": "icons/icon19.png",
     "default_popup": "html/page_action/page_action.html"
   },
@@ -22,5 +21,5 @@
       "js": ["js/content_scripts/contentScript.js"]
     }
   ],
-  "permissions": ["declarativeContent", "storage", "activeTab"]
+  "permissions": ["declarativeContent", "storage", "activeTab", "scripting"]
 }
