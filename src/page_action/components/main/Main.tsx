@@ -1,6 +1,6 @@
 import { secToTimeStr } from "pa/entities/Time";
 import { updateTime } from "pa/modules/ChromeTabs";
-import { useContext, useEffect } from "react";
+import { memo, useContext, useEffect } from "react";
 import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
 import { SelectedIdStateContext } from "src/page_action/contexts/SelectedIdContext";
 import { SelectedSecondsStateContext } from "src/page_action/contexts/SelectedSecondsContext";
@@ -157,4 +157,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default memo(Main);

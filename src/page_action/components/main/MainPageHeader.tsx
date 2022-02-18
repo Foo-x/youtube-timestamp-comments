@@ -1,5 +1,5 @@
 import { sendMessage } from "pa/modules/ChromeTabs";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { Link } from "react-router-dom";
 import { IsLastStateContext } from "src/page_action/contexts/IsLastContext";
 import {
@@ -7,6 +7,11 @@ import {
   IsProgressStateContext,
 } from "src/page_action/contexts/IsProgressContext";
 import { ScrollDispatchContext } from "src/page_action/contexts/ScrollContext";
+import { SideMenuRefStateContext } from "src/page_action/contexts/SideMenuRefContext";
+import {
+  SideMenuScrollDispatchContext,
+  SideMenuScrollStateContext,
+} from "src/page_action/contexts/SideMenuScrollContext";
 import { TotalCountStateContext } from "src/page_action/contexts/TotalCountContext";
 
 const MainPageHeader = () => {
@@ -15,6 +20,9 @@ const MainPageHeader = () => {
   const isProgress = useContext(IsProgressStateContext);
   const setIsProgress = useContext(IsProgressDispatchContext);
   const setScroll = useContext(ScrollDispatchContext);
+  const sideMenuScroll = useContext(SideMenuScrollStateContext);
+  const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
+  const sideMenuRef = useContext(SideMenuRefStateContext);
 
   const progress = isProgress ? (
     <div>
@@ -51,7 +59,12 @@ const MainPageHeader = () => {
             <Link
               to="/config"
               className="navbar-item"
-              onClick={() => setScroll(window.scrollY)}
+              onClick={() => {
+                setScroll(window.scrollY);
+                setSideMenuScroll(
+                  sideMenuRef.current?.scrollTop ?? sideMenuScroll
+                );
+              }}
             >
               <span className="icon">
                 <i className="fas fa-cog fa-sm" />
@@ -65,4 +78,4 @@ const MainPageHeader = () => {
   );
 };
 
-export default MainPageHeader;
+export default memo(MainPageHeader);

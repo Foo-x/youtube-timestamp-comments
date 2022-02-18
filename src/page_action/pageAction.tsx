@@ -34,6 +34,9 @@ import SelectedIdContextProvider, {
   SelectedIdStateContext,
 } from "./contexts/SelectedIdContext";
 import SelectedSecondsContextProvider from "./contexts/SelectedSecondsContext";
+import SideMenuRefContextProvider, {
+  SideMenuRefStateContext,
+} from "./contexts/SideMenuRefContext";
 import SideMenuScrollContextProvider, {
   SideMenuScrollDispatchContext,
   SideMenuScrollStateContext,
@@ -57,6 +60,7 @@ const PageAction = () => {
   const setScroll = useContext(ScrollDispatchContext);
   const sideMenuScroll = useContext(SideMenuScrollStateContext);
   const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
+  const sideMenuRef = useContext(SideMenuRefStateContext);
   const selectedId = useContext(SelectedIdStateContext);
   const setSelectedId = useContext(SelectedIdDispatchContext);
   const setIsApiKeyInvalid = useContext(IsApiKeyInvalidDispatchContext);
@@ -105,12 +109,21 @@ const PageAction = () => {
         type: "save-view-props",
         data: {
           scroll: location.pathname === "/" ? window.scrollY : scroll,
-          sideMenuScroll,
+          sideMenuScroll:
+            location.pathname === "/"
+              ? sideMenuRef.current?.scrollTop ?? sideMenuScroll
+              : sideMenuScroll,
           selectedId,
         },
       });
     };
-  }, [location.pathname, scroll, sideMenuScroll, selectedId]);
+  }, [
+    location.pathname,
+    scroll,
+    sideMenuScroll,
+    selectedId,
+    sideMenuRef.current,
+  ]);
   useEffect(() => {
     if (location.pathname === "/") {
       window.scroll(0, scroll);
@@ -139,13 +152,15 @@ ReactDOM.render(
               <IsProgressContextProvider>
                 <ScrollContextProvider>
                   <SideMenuScrollContextProvider>
-                    <SelectedIdContextProvider>
-                      <SelectedSecondsContextProvider>
-                        <IsApiKeyInvalidContextProvider>
-                          <PageAction />
-                        </IsApiKeyInvalidContextProvider>
-                      </SelectedSecondsContextProvider>
-                    </SelectedIdContextProvider>
+                    <SideMenuRefContextProvider>
+                      <SelectedIdContextProvider>
+                        <SelectedSecondsContextProvider>
+                          <IsApiKeyInvalidContextProvider>
+                            <PageAction />
+                          </IsApiKeyInvalidContextProvider>
+                        </SelectedSecondsContextProvider>
+                      </SelectedIdContextProvider>
+                    </SideMenuRefContextProvider>
                   </SideMenuScrollContextProvider>
                 </ScrollContextProvider>
               </IsProgressContextProvider>

@@ -1,42 +1,33 @@
 import { secToTimeStr } from "pa/entities/Time";
 import { updateTime } from "pa/modules/ChromeTabs";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect } from "react";
 import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
 import {
   SelectedIdDispatchContext,
   SelectedIdStateContext,
 } from "src/page_action/contexts/SelectedIdContext";
 import { SelectedSecondsDispatchContext } from "src/page_action/contexts/SelectedSecondsContext";
-import {
-  SideMenuScrollDispatchContext,
-  SideMenuScrollStateContext,
-} from "src/page_action/contexts/SideMenuScrollContext";
+import { SideMenuRefStateContext } from "src/page_action/contexts/SideMenuRefContext";
+import { SideMenuScrollStateContext } from "src/page_action/contexts/SideMenuScrollContext";
 
 const MainSideMenu = () => {
   const fetchedComments = useContext(FetchedCommentsStateContext);
   const sideMenuScroll = useContext(SideMenuScrollStateContext);
-  const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
+  const sideMenuRef = useContext(SideMenuRefStateContext);
   const selectedId = useContext(SelectedIdStateContext);
   const setSelectedId = useContext(SelectedIdDispatchContext);
   const setSelectedSeconds = useContext(SelectedSecondsDispatchContext);
 
-  const sideMenuListRef = useRef<HTMLUListElement>(null);
-
   useEffect(() => {
-    sideMenuListRef.current?.scroll(0, sideMenuScroll);
-  }, [sideMenuScroll]);
-
-  const onscroll: React.UIEventHandler = (event) => {
-    setSideMenuScroll(event.currentTarget.scrollTop);
-  };
+    sideMenuRef.current?.scroll(0, sideMenuScroll);
+  }, [sideMenuScroll, sideMenuRef.current]);
 
   return (
     <aside className="menu column is-4">
       <ul
         id="side-menu-list"
         className="menu-list side-menu-list"
-        onScroll={onscroll}
-        ref={sideMenuListRef}
+        ref={sideMenuRef}
       >
         <li>
           <a
