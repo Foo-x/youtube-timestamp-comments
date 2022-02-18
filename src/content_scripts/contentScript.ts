@@ -1,3 +1,4 @@
+import AsyncLock from "async-lock";
 import { getApiKey } from "../modules/ChromeStorage";
 import { createUrl, fetchNextPage } from "./apis/YouTubeDataApi";
 import { createFetchedComments } from "./entities/FetchedComments";
@@ -5,27 +6,30 @@ import { createFetchedComments } from "./entities/FetchedComments";
 if (!chrome.runtime.onMessage.hasListeners()) {
   // MODEL
 
-  type WithVideoId = { state: "with-video-id"; videoId: VideoId };
-  type WithPageToken = {
-    state: "with-page-token";
+  type Common = {
+    state: string;
     videoId: VideoId;
-    pageToken: string;
-    fetchedSeconds: FetchedComments;
-    totalCount: number;
-    viewProps?: ViewProps;
+    lock: AsyncLock;
   };
-  type LastPageLoaded = {
+  type WithVideoId = Common & {
+    state: "with-video-id";
+  };
+  type LastPageLoaded = Common & {
     state: "last-page-loaded";
-    videoId: VideoId;
     fetchedSeconds: FetchedComments;
     totalCount: number;
     viewProps?: ViewProps;
   };
-  type Model = WithVideoId | WithPageToken | LastPageLoaded;
+  type WithPageToken = Omit<LastPageLoaded, "state"> & {
+    state: "with-page-token";
+    pageToken: string;
+  };
+  type Model = WithVideoId | LastPageLoaded | WithPageToken;
 
   const init = (): WithVideoId => ({
     state: "with-video-id",
     videoId: new URLSearchParams(document.location.search).get("v")! as VideoId,
+    lock: new AsyncLock(),
   });
   let model: Model = init();
 
@@ -93,6 +97,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         videoId: model.videoId,
         fetchedSeconds: { comments: [], secondCommentIndexPairs: [] },
         totalCount: 0,
+        lock: model.lock,
       };
     }
     if (typeof pageResult === "string") {
@@ -107,61 +112,67 @@ if (!chrome.runtime.onMessage.hasListeners()) {
           fetchedSeconds,
           totalCount: pageResult.totalCount,
           pageToken: pageResult.pageToken,
+          lock: model.lock,
         }
       : {
           state: "last-page-loaded",
           videoId: model.videoId,
           fetchedSeconds,
           totalCount: pageResult.totalCount,
+          lock: model.lock,
         };
     sendPageResponse(model);
   };
 
   const onNextPage = async () => {
-    if (model.state === "last-page-loaded") {
-      sendPageResponse(model);
-      return;
-    }
-    const key = (await getApiKey()) as ApiKey | undefined;
-    if (!key) {
-      sendErrorResponse("invalid-api-key");
-      return;
-    }
-    if (model.state === "with-video-id") {
-      onFirstPage();
-      return;
-    }
+    model.lock.acquire("key", async () => {
+      if (model.state === "last-page-loaded") {
+        sendPageResponse(model);
+        return;
+      }
+      const key = (await getApiKey()) as ApiKey | undefined;
+      if (!key) {
+        sendErrorResponse("invalid-api-key");
+        return;
+      }
+      if (model.state === "with-video-id") {
+        onFirstPage();
+        return;
+      }
 
-    const pageResult = await fetchNextPage(
-      createUrl(model.videoId, key, model.pageToken),
-      model.totalCount
-    );
-    if (typeof pageResult === "string") {
-      sendErrorResponse(pageResult);
-      return;
-    }
-    const fetchedSeconds = createFetchedComments([
-      ...model.fetchedSeconds.comments,
-      ...pageResult.comments,
-    ]);
-    const viewProps = model.viewProps;
-    model = pageResult.pageToken
-      ? {
-          state: "with-page-token",
-          videoId: model.videoId,
-          fetchedSeconds,
-          totalCount: pageResult.totalCount,
-          pageToken: pageResult.pageToken,
-          viewProps,
-        }
-      : {
-          state: "last-page-loaded",
-          videoId: model.videoId,
-          fetchedSeconds,
-          totalCount: pageResult.totalCount,
-          viewProps,
-        };
-    sendPageResponse(model);
+      const pageResult = await fetchNextPage(
+        createUrl(model.videoId, key, model.pageToken),
+        model.totalCount
+      );
+      if (typeof pageResult === "string") {
+        sendErrorResponse(pageResult);
+        return;
+      }
+      const fetchedSeconds = createFetchedComments([
+        ...model.fetchedSeconds.comments,
+        ...pageResult.comments,
+      ]);
+      const viewProps = model.viewProps;
+      model = pageResult.pageToken
+        ? {
+            state: "with-page-token",
+            videoId: model.videoId,
+            fetchedSeconds,
+            totalCount: pageResult.totalCount,
+            pageToken: pageResult.pageToken,
+            viewProps,
+            lock: model.lock,
+          }
+        : {
+            state: "last-page-loaded",
+            videoId: model.videoId,
+            fetchedSeconds,
+            totalCount: pageResult.totalCount,
+            viewProps,
+            lock: model.lock,
+          };
+      sendPageResponse(model);
+    });
   };
 
   const update = async (msg: MsgToCS) => {
