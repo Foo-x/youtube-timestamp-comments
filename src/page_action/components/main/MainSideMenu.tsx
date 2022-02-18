@@ -1,6 +1,7 @@
+import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from "@foo-x/react-tea";
 import { secToTimeStr } from "pa/entities/Time";
 import { updateTime } from "pa/modules/ChromeTabs";
-import { useContext, useEffect } from "react";
+import { RefObject, useContext, useEffect } from "react";
 import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
 import {
   SelectedIdDispatchContext,
@@ -10,8 +11,31 @@ import { SelectedSecondsDispatchContext } from "src/page_action/contexts/Selecte
 import { SideMenuRefStateContext } from "src/page_action/contexts/SideMenuRefContext";
 import { SideMenuScrollStateContext } from "src/page_action/contexts/SideMenuScrollContext";
 
-const MainSideMenu = () => {
-  const fetchedComments = useContext(FetchedCommentsStateContext);
+type Model = null;
+
+type Msg = Model;
+
+type Props = {};
+
+type HooksResult = {
+  secondCommentIndexPairs: [number, number][];
+  sideMenuRef: RefObject<HTMLUListElement>;
+  selectedId: SelectedId;
+  setSelectedId: (v: SelectedId) => void;
+  setSelectedSeconds: (v: SelectedSeconds) => void;
+};
+
+export const init: Init<Model, Msg, Props> = ({}) => [null, Cmd.none()];
+
+export const update: Update<Model, Msg, Props> = ({}) => {
+  return [null, Cmd.none()];
+};
+export const subscriptions: Sub<Model, Msg, Props> = Sub.none();
+
+export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
+  const secondCommentIndexPairs = useContext(
+    FetchedCommentsStateContext
+  ).secondCommentIndexPairs;
   const sideMenuScroll = useContext(SideMenuScrollStateContext);
   const sideMenuRef = useContext(SideMenuRefStateContext);
   const selectedId = useContext(SelectedIdStateContext);
@@ -22,6 +46,24 @@ const MainSideMenu = () => {
     sideMenuRef.current?.scroll(0, sideMenuScroll);
   }, [sideMenuScroll, sideMenuRef.current]);
 
+  return {
+    secondCommentIndexPairs,
+    sideMenuRef,
+    selectedId,
+    setSelectedId,
+    setSelectedSeconds,
+  };
+};
+
+export const view: View<Model, Msg, Props, HooksResult> = ({
+  hooksResult: {
+    secondCommentIndexPairs,
+    sideMenuRef,
+    selectedId,
+    setSelectedId,
+    setSelectedSeconds,
+  },
+}) => {
   return (
     <aside className="menu column is-4">
       <ul
@@ -40,7 +82,7 @@ const MainSideMenu = () => {
             ALL
           </a>
         </li>
-        {fetchedComments.secondCommentIndexPairs.map(([sec], id) => {
+        {secondCommentIndexPairs.map(([sec], id) => {
           const timeStr = secToTimeStr(sec);
           const button =
             selectedId === id ? (
@@ -63,5 +105,7 @@ const MainSideMenu = () => {
     </aside>
   );
 };
+
+const MainSideMenu = Tea({ init, update, subscriptions, useHooks, view });
 
 export default MainSideMenu;
