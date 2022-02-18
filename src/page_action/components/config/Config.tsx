@@ -1,26 +1,47 @@
-import { useContext, useEffect, useReducer } from "react";
+import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from "@foo-x/react-tea";
+import { useContext } from "react";
 import { getApiKey, setApiKey } from "src/modules/ChromeStorage";
 import {
   IsApiKeyInvalidDispatchContext,
   IsApiKeyInvalidStateContext,
 } from "src/page_action/contexts/IsApiKeyInvalidContext";
 
-const apiKeyReducer = (_: string, newKey: string): string => {
-  setApiKey(newKey);
-  return newKey;
+type Model = string;
+
+type Msg = Model;
+
+type Props = {};
+
+type HooksResult = {
+  isApiKeyInvalid: boolean;
+  setIsApiKeyInvalid: (v: boolean) => void;
 };
 
-const Config = () => {
-  const [key, dispatch] = useReducer(apiKeyReducer, "");
-  const isApiKeyInvalid = useContext(IsApiKeyInvalidStateContext);
-  const setIsApiKeyInvalid = useContext(IsApiKeyInvalidDispatchContext);
+export const init: Init<Model, Msg, Props> = ({}) => [
+  "",
+  Cmd.promise(async (dispatch) => {
+    dispatch((await getApiKey()) ?? "");
+  }),
+];
 
-  useEffect(() => {
-    (async () => {
-      dispatch((await getApiKey()) ?? "");
-    })();
-  }, []);
+export const update: Update<Model, Msg, Props> = ({ msg }) => {
+  setApiKey(msg);
+  return [msg, Cmd.none()];
+};
+export const subscriptions: Sub<Model, Msg, Props> = Sub.none();
 
+export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
+  return {
+    isApiKeyInvalid: useContext(IsApiKeyInvalidStateContext),
+    setIsApiKeyInvalid: useContext(IsApiKeyInvalidDispatchContext),
+  };
+};
+
+export const view: View<Model, Msg, Props, HooksResult> = ({
+  model: key,
+  dispatch,
+  hooksResult: { isApiKeyInvalid, setIsApiKeyInvalid },
+}) => {
   return (
     <main className="config main-container" role="main">
       <section className="section">
@@ -71,5 +92,7 @@ const Config = () => {
     </main>
   );
 };
+
+const Config = Tea({ init, update, subscriptions, useHooks, view });
 
 export default Config;
