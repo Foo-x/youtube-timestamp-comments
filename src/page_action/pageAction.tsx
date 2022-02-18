@@ -25,8 +25,8 @@ import {
   TotalCountContext,
 } from "./contexts/AppContext";
 import { initContentScript, sendMessage } from "./modules/ChromeTabs";
-import ConfigPage from "./pages/ConfigPage";
-import MainPage from "./pages/MainPage";
+import ConfigPage from "./pages/config";
+import MainPage from "./pages/main";
 
 const PageAction = () => {
   const location = useLocation();

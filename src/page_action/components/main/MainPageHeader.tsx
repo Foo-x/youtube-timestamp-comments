@@ -1,12 +1,12 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
 import {
   IsLastContext,
   IsProgressContext,
   ScrollContext,
   TotalCountContext,
-} from "../contexts/AppContext";
-import { sendMessage } from "../modules/ChromeTabs";
+} from "pa/contexts/AppContext";
+import { sendMessage } from "pa/modules/ChromeTabs";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
 
 const MainPageHeader = () => {
   const totalCount = useContext(TotalCountContext);

@@ -1,5 +1,5 @@
 import AsyncLock from "async-lock";
-import { getApiKey } from "../modules/ChromeStorage";
+import { getApiKey } from "src/modules/ChromeStorage";
 import { createUrl, fetchNextPage } from "./apis/YouTubeDataApi";
 import { createFetchedComments } from "./entities/FetchedComments";
 

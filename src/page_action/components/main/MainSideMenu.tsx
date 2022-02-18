@@ -1,12 +1,12 @@
-import { useContext, useEffect, useRef } from "react";
 import {
   FetchedCommentsContext,
   SelectedIdContext,
   SelectedSecondsContext,
   SideMenuScrollContext,
-} from "../contexts/AppContext";
-import { secToTimeStr } from "../entities/Time";
-import { updateTime } from "../modules/ChromeTabs";
+} from "pa/contexts/AppContext";
+import { secToTimeStr } from "pa/entities/Time";
+import { updateTime } from "pa/modules/ChromeTabs";
+import { useContext, useEffect, useRef } from "react";
 
 const MainSideMenu = () => {
   const fetchedComments = useContext(FetchedCommentsContext);

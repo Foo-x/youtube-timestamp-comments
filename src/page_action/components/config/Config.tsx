@@ -1,6 +1,6 @@
+import { IsApiKeyInvalidContext } from "pa/contexts/AppContext";
 import { useContext, useEffect, useReducer } from "react";
-import { getApiKey, setApiKey } from "../../modules/ChromeStorage";
-import { IsApiKeyInvalidContext } from "../contexts/AppContext";
+import { getApiKey, setApiKey } from "src/modules/ChromeStorage";
 
 const apiKeyReducer = (_: string, newKey: string): string => {
   setApiKey(newKey);

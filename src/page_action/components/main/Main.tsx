@@ -1,11 +1,11 @@
-import { useContext, useEffect } from "react";
 import {
   FetchedCommentsContext,
   SelectedIdContext,
   SelectedSecondsContext,
-} from "../contexts/AppContext";
-import { secToTimeStr } from "../entities/Time";
-import { updateTime } from "../modules/ChromeTabs";
+} from "pa/contexts/AppContext";
+import { secToTimeStr } from "pa/entities/Time";
+import { updateTime } from "pa/modules/ChromeTabs";
+import { useContext, useEffect } from "react";
 import MainSideMenu from "./MainSideMenu";
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;

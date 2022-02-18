@@ -1,5 +1,5 @@
-import Config from "../components/Config";
-import ConfigPageHeader from "../components/ConfigPageHeader.1";
+import Config from "pa/components/config/Config";
+import ConfigPageHeader from "pa/components/config/ConfigPageHeader";
 
 const ConfigPage = () => {
   return (
