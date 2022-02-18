@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
+    "@foo-x/react-tea": "^0.1.2",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@types/async-lock": "^1.1.3",
     "@types/chrome": "^0.0.177",

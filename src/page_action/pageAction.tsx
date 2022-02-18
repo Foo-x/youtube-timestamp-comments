@@ -4,7 +4,7 @@ import "@fortawesome/fontawesome-free/js/fontawesome";
 import "@fortawesome/fontawesome-free/js/solid";
 import "bulma-divider/dist/css/bulma-divider.min.css";
 import "bulma/css/bulma.min.css";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   MemoryRouter as Router,
@@ -13,17 +13,34 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom";
-import {
-  FetchedCommentsContext,
-  IsApiKeyInvalidContext,
-  IsLastContext,
-  IsProgressContext,
-  ScrollContext,
-  SelectedIdContext,
-  SelectedSecondsContext,
-  SideMenuScrollContext,
-  TotalCountContext,
-} from "./contexts/AppContext";
+import FetchedCommentsContextProvider, {
+  FetchedCommentsDispatchContext,
+} from "./contexts/FetchedCommentsContext";
+import IsApiKeyInvalidContextProvider, {
+  IsApiKeyInvalidDispatchContext,
+} from "./contexts/IsApiKeyInvalidContext";
+import IsLastContextProvider, {
+  IsLastDispatchContext,
+} from "./contexts/IsLastContext";
+import IsProgressContextProvider, {
+  IsProgressDispatchContext,
+} from "./contexts/IsProgressContext";
+import ScrollContextProvider, {
+  ScrollDispatchContext,
+  ScrollStateContext,
+} from "./contexts/ScrollContext";
+import SelectedIdContextProvider, {
+  SelectedIdDispatchContext,
+  SelectedIdStateContext,
+} from "./contexts/SelectedIdContext";
+import SelectedSecondsContextProvider from "./contexts/SelectedSecondsContext";
+import SideMenuScrollContextProvider, {
+  SideMenuScrollDispatchContext,
+  SideMenuScrollStateContext,
+} from "./contexts/SideMenuScrollContext";
+import TotalCountContextProvider, {
+  TotalCountDispatchContext,
+} from "./contexts/TotalCountContext";
 import { initContentScript, sendMessage } from "./modules/ChromeTabs";
 import ConfigPage from "./pages/config";
 import MainPage from "./pages/main";
@@ -32,20 +49,17 @@ const PageAction = () => {
   const location = useLocation();
   const history = useHistory();
 
-  const [totalCount, setTotalCount] = useState(0);
-  const [fetchedComments, setFetchedComments] = useState<FetchedComments>({
-    comments: [],
-    secondCommentIndexPairs: [],
-  });
-  const [isLast, setIsLast] = useState(false);
-  const [isProgress, setIsProgress] = useState(false);
-  const [scroll, setScroll] = useState(0);
-  const [cachedSideMenuScroll, setCachedSideMenuScroll] = useState(0);
-  const [sideMenuScroll, setSideMenuScroll] = useState(0);
-  const [selectedId, setSelectedId] = useState<SelectedId>("ALL");
-  const [selectedSeconds, setSelectedSeconds] =
-    useState<SelectedSeconds>("ALL");
-  const [isApiKeyInvalid, setIsApiKeyInvalid] = useState(false);
+  const setTotalCount = useContext(TotalCountDispatchContext);
+  const setFetchedComments = useContext(FetchedCommentsDispatchContext);
+  const setIsLast = useContext(IsLastDispatchContext);
+  const setIsProgress = useContext(IsProgressDispatchContext);
+  const scroll = useContext(ScrollStateContext);
+  const setScroll = useContext(ScrollDispatchContext);
+  const sideMenuScroll = useContext(SideMenuScrollStateContext);
+  const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
+  const selectedId = useContext(SelectedIdStateContext);
+  const setSelectedId = useContext(SelectedIdDispatchContext);
+  const setIsApiKeyInvalid = useContext(IsApiKeyInvalidDispatchContext);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
@@ -58,7 +72,7 @@ const PageAction = () => {
       }
       if (msg.type === "view-props") {
         setScroll(msg.data.scroll);
-        setCachedSideMenuScroll(msg.data.sideMenuScroll);
+        setSideMenuScroll(msg.data.sideMenuScroll);
         setSelectedId(msg.data.selectedId);
         return;
       }
@@ -105,36 +119,12 @@ const PageAction = () => {
 
   return (
     <>
-      <TotalCountContext.Provider value={totalCount}>
-        <FetchedCommentsContext.Provider value={fetchedComments}>
-          <IsLastContext.Provider value={isLast}>
-            <IsProgressContext.Provider value={[isProgress, setIsProgress]}>
-              <ScrollContext.Provider value={[scroll, setScroll]}>
-                <SideMenuScrollContext.Provider
-                  value={[cachedSideMenuScroll, setSideMenuScroll]}
-                >
-                  <SelectedIdContext.Provider
-                    value={[selectedId, setSelectedId]}
-                  >
-                    <SelectedSecondsContext.Provider
-                      value={[selectedSeconds, setSelectedSeconds]}
-                    >
-                      <Route exact path="/">
-                        <MainPage />
-                      </Route>
-                    </SelectedSecondsContext.Provider>
-                  </SelectedIdContext.Provider>
-                </SideMenuScrollContext.Provider>
-              </ScrollContext.Provider>
-            </IsProgressContext.Provider>
-          </IsLastContext.Provider>
-        </FetchedCommentsContext.Provider>
-      </TotalCountContext.Provider>
-      <IsApiKeyInvalidContext.Provider
-        value={[isApiKeyInvalid, setIsApiKeyInvalid]}
-      >
-        <Route exact path="/config" component={ConfigPage} />
-      </IsApiKeyInvalidContext.Provider>
+      <Route exact path="/">
+        <MainPage />
+      </Route>
+      <Route exact path="/config">
+        <ConfigPage />
+      </Route>
     </>
   );
 };
@@ -143,7 +133,25 @@ ReactDOM.render(
   <React.StrictMode>
     <Router>
       <Switch>
-        <PageAction />
+        <TotalCountContextProvider>
+          <FetchedCommentsContextProvider>
+            <IsLastContextProvider>
+              <IsProgressContextProvider>
+                <ScrollContextProvider>
+                  <SideMenuScrollContextProvider>
+                    <SelectedIdContextProvider>
+                      <SelectedSecondsContextProvider>
+                        <IsApiKeyInvalidContextProvider>
+                          <PageAction />
+                        </IsApiKeyInvalidContextProvider>
+                      </SelectedSecondsContextProvider>
+                    </SelectedIdContextProvider>
+                  </SideMenuScrollContextProvider>
+                </ScrollContextProvider>
+              </IsProgressContextProvider>
+            </IsLastContextProvider>
+          </FetchedCommentsContextProvider>
+        </TotalCountContextProvider>
       </Switch>
     </Router>
   </React.StrictMode>,

@@ -1,11 +1,9 @@
-import {
-  FetchedCommentsContext,
-  SelectedIdContext,
-  SelectedSecondsContext,
-} from "pa/contexts/AppContext";
 import { secToTimeStr } from "pa/entities/Time";
 import { updateTime } from "pa/modules/ChromeTabs";
 import { useContext, useEffect } from "react";
+import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
+import { SelectedIdStateContext } from "src/page_action/contexts/SelectedIdContext";
+import { SelectedSecondsStateContext } from "src/page_action/contexts/SelectedSecondsContext";
 import MainSideMenu from "./MainSideMenu";
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
@@ -111,9 +109,9 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
 };
 
 const Main = () => {
-  const fetchedComments = useContext(FetchedCommentsContext);
-  const [selectedId] = useContext(SelectedIdContext);
-  const [selectedSeconds] = useContext(SelectedSecondsContext);
+  const fetchedComments = useContext(FetchedCommentsStateContext);
+  const selectedId = useContext(SelectedIdStateContext);
+  const selectedSeconds = useContext(SelectedSecondsStateContext);
 
   const content =
     selectedId === "ALL"

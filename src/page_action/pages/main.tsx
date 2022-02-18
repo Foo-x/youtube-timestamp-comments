@@ -1,10 +1,10 @@
 import Main from "pa/components/main/Main";
 import MainPageHeader from "pa/components/main/MainPageHeader";
-import { FetchedCommentsContext } from "pa/contexts/AppContext";
 import { useContext } from "react";
+import { FetchedCommentsStateContext } from "../contexts/FetchedCommentsContext";
 
 const MainPage = () => {
-  const fetchedComments = useContext(FetchedCommentsContext);
+  const fetchedComments = useContext(FetchedCommentsStateContext);
 
   return (
     <div

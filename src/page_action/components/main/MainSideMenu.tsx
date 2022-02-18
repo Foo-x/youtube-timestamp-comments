@@ -1,18 +1,24 @@
-import {
-  FetchedCommentsContext,
-  SelectedIdContext,
-  SelectedSecondsContext,
-  SideMenuScrollContext,
-} from "pa/contexts/AppContext";
 import { secToTimeStr } from "pa/entities/Time";
 import { updateTime } from "pa/modules/ChromeTabs";
 import { useContext, useEffect, useRef } from "react";
+import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
+import {
+  SelectedIdDispatchContext,
+  SelectedIdStateContext,
+} from "src/page_action/contexts/SelectedIdContext";
+import { SelectedSecondsDispatchContext } from "src/page_action/contexts/SelectedSecondsContext";
+import {
+  SideMenuScrollDispatchContext,
+  SideMenuScrollStateContext,
+} from "src/page_action/contexts/SideMenuScrollContext";
 
 const MainSideMenu = () => {
-  const fetchedComments = useContext(FetchedCommentsContext);
-  const [sideMenuScroll, setSideMenuScroll] = useContext(SideMenuScrollContext);
-  const [selectedId, setSelectedId] = useContext(SelectedIdContext);
-  const setSelectedSeconds = useContext(SelectedSecondsContext)[1];
+  const fetchedComments = useContext(FetchedCommentsStateContext);
+  const sideMenuScroll = useContext(SideMenuScrollStateContext);
+  const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
+  const selectedId = useContext(SelectedIdStateContext);
+  const setSelectedId = useContext(SelectedIdDispatchContext);
+  const setSelectedSeconds = useContext(SelectedSecondsDispatchContext);
 
   const sideMenuListRef = useRef<HTMLUListElement>(null);
 

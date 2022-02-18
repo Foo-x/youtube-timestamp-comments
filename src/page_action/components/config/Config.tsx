@@ -1,6 +1,9 @@
-import { IsApiKeyInvalidContext } from "pa/contexts/AppContext";
 import { useContext, useEffect, useReducer } from "react";
 import { getApiKey, setApiKey } from "src/modules/ChromeStorage";
+import {
+  IsApiKeyInvalidDispatchContext,
+  IsApiKeyInvalidStateContext,
+} from "src/page_action/contexts/IsApiKeyInvalidContext";
 
 const apiKeyReducer = (_: string, newKey: string): string => {
   setApiKey(newKey);
@@ -9,9 +12,8 @@ const apiKeyReducer = (_: string, newKey: string): string => {
 
 const Config = () => {
   const [key, dispatch] = useReducer(apiKeyReducer, "");
-  const [isApiKeyInvalid, setIsApiKeyInvalid] = useContext(
-    IsApiKeyInvalidContext
-  );
+  const isApiKeyInvalid = useContext(IsApiKeyInvalidStateContext);
+  const setIsApiKeyInvalid = useContext(IsApiKeyInvalidDispatchContext);
 
   useEffect(() => {
     (async () => {

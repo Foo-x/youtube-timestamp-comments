@@ -1,18 +1,20 @@
-import {
-  IsLastContext,
-  IsProgressContext,
-  ScrollContext,
-  TotalCountContext,
-} from "pa/contexts/AppContext";
 import { sendMessage } from "pa/modules/ChromeTabs";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { IsLastStateContext } from "src/page_action/contexts/IsLastContext";
+import {
+  IsProgressDispatchContext,
+  IsProgressStateContext,
+} from "src/page_action/contexts/IsProgressContext";
+import { ScrollDispatchContext } from "src/page_action/contexts/ScrollContext";
+import { TotalCountStateContext } from "src/page_action/contexts/TotalCountContext";
 
 const MainPageHeader = () => {
-  const totalCount = useContext(TotalCountContext);
-  const isLast = useContext(IsLastContext);
-  const [isProgress, setIsProgress] = useContext(IsProgressContext);
-  const setScroll = useContext(ScrollContext)[1];
+  const totalCount = useContext(TotalCountStateContext);
+  const isLast = useContext(IsLastStateContext);
+  const isProgress = useContext(IsProgressStateContext);
+  const setIsProgress = useContext(IsProgressDispatchContext);
+  const setScroll = useContext(ScrollDispatchContext);
 
   const progress = isProgress ? (
     <div>
