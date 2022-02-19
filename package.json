@@ -10,7 +10,13 @@
     "dev": "npm run clean && npm run static && npm run dev:js",
     "dev:js": "NODE_ENV=development $npm_package_config_build --no-optimize",
     "archive": "npm run build && cd dist && zip youtube-timestamp-comments * -r",
-    "watch": "nodemon"
+    "watch": "nodemon",
+    "lint": "run-p lint:*",
+    "lint:eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint:prettier": "prettier . --check",
+    "fmt": "run-s fmt:prettier fmt:eslint",
+    "fmt:eslint": "npm run lint:eslint -- --fix",
+    "fmt:prettier": "npm run lint:prettier -- --write"
   },
   "config": {
     "build": "parcel build src/page_action/pageAction.tsx src/background/background.ts src/content_scripts/contentScript.ts --dist-dir dist/js"
