@@ -2,7 +2,7 @@ const TARGET_HOST = 'www.youtube.com';
 const TARGET_PATH = '/watch';
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.action.disable();
+  void chrome.action.disable();
 
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([

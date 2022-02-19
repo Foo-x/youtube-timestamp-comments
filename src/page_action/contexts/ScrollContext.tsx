@@ -5,14 +5,16 @@ type Model = number;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => [0, Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => [0, Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const ScrollStateContext = createContext(0);
-export const ScrollDispatchContext = createContext<Dispatch<Msg>>(() => {});
+export const ScrollDispatchContext = createContext<Dispatch<Msg>>(() => {
+  // noop
+});
 
 export const view: View<Model, Msg, Props> = ({
   model,

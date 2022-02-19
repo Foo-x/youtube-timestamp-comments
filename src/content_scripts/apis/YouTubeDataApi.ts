@@ -6,6 +6,30 @@ export type PageResult = {
 
 export type YouTubeURL = URL & { readonly _: unique symbol };
 
+type YouTubeCommentThreadsError = {
+  error: {
+    errors: Array<{
+      reason: string;
+    }>;
+  };
+};
+
+type YouTubeCommentThreadsSuccess = {
+  nextPageToken?: string;
+  pageInfo: {
+    totalResults: number;
+  };
+  items: Array<{
+    snippet: {
+      topLevelComment: {
+        snippet: {
+          textOriginal: string;
+        };
+      };
+    };
+  }>;
+};
+
 export const createUrl = (
   videoId: VideoId,
   key: ApiKey,
@@ -32,7 +56,8 @@ export const fetchNextPage = async (
 ): Promise<PageResult | ErrorType> => {
   const res = await fetch(url.toString());
   if (!res.ok) {
-    const {reason} = (await res.json()).error.errors[0];
+    const { reason } = ((await res.json()) as YouTubeCommentThreadsError).error
+      .errors[0];
     switch (reason) {
       case 'commentsDisabled':
         return 'comments-disabled';
@@ -44,11 +69,11 @@ export const fetchNextPage = async (
     }
   }
 
-  const resJson = await res.json();
+  const resJson = (await res.json()) as YouTubeCommentThreadsSuccess;
   const pageToken = resJson.nextPageToken;
   const totalCount = currentCount + resJson.pageInfo.totalResults;
   const comments = resJson.items.map(
-    (item: any) => item.snippet.topLevelComment.snippet.textOriginal
+    (item) => item.snippet.topLevelComment.snippet.textOriginal
   );
 
   return { pageToken, totalCount, comments };

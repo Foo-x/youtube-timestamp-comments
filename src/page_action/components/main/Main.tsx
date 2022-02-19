@@ -1,7 +1,14 @@
 import { Container, UseHooks, View } from '@foo-x/react-container';
 import { secToTimeStr } from 'pa/entities/Time';
 import { updateTime } from 'pa/modules/ChromeTabs';
-import { memo, ReactElement, useContext, useEffect, useMemo } from 'react';
+import {
+  memo,
+  ReactElement,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import { FetchedCommentsStateContext } from 'src/page_action/contexts/FetchedCommentsContext';
 import { SelectedIdStateContext } from 'src/page_action/contexts/SelectedIdContext';
 import { SelectedSecondsStateContext } from 'src/page_action/contexts/SelectedSecondsContext';
@@ -9,7 +16,7 @@ import MainSideMenu from './MainSideMenu';
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
 
-type Props = {};
+type Props = unknown;
 
 type HooksResult = {
   content: ReactElement | ReactElement[];
@@ -34,7 +41,7 @@ const createS2C = (secondCommentPairs: [number, string][]): Second2Comments => {
   const result = new Map<number, string[]>();
   secondCommentPairs.forEach(([sec, comment]) => {
     if (result.has(sec)) {
-      result.set(sec, [...result.get(sec)!, comment]);
+      result.set(sec, [...(result.get(sec) ?? []), comment]);
       return;
     }
     result.set(sec, [comment]);
@@ -46,15 +53,15 @@ const timestampToSeconds = (timestamp: string): number => {
   const [first, second, third] = timestamp.split(':');
   const [h, m, s] =
     third === undefined
-      ? [0, parseInt(first), parseInt(second)]
-      : [parseInt(first), parseInt(second), parseInt(third)];
+      ? [0, parseInt(first, 10), parseInt(second, 10)]
+      : [parseInt(first, 10), parseInt(second, 10), parseInt(third, 10)];
   return h * 3600 + m * 60 + s;
 };
 
-const replaceNewline = (text: string): JSX.Element => {
+const replaceNewline = (text: string): ReactNode => {
   return text
     .split('\n')
-    .map((text_) => <>{text_}</>)
+    .map<ReactNode>((text_) => text_)
     .reduce((pre, cur) => (
       <>
         {pre}
@@ -64,23 +71,36 @@ const replaceNewline = (text: string): JSX.Element => {
     ));
 };
 
-const replaceTimeLink = (comment: string): JSX.Element => {
-  const resultArray: JSX.Element[] = [];
+const replaceTimeLink = (comment: string): ReactNode => {
+  const resultArray: ReactNode[] = [];
 
   let lastIndex = 0;
   let currentMatch: RegExpExecArray | null;
-  while ((currentMatch = timestampPattern.exec(comment)) !== null) {
+  currentMatch = timestampPattern.exec(comment);
+  while (currentMatch !== null) {
     resultArray.push(
       replaceNewline(comment.slice(lastIndex, currentMatch.index))
     );
     const timestamp = currentMatch[0];
     const seconds = timestampToSeconds(timestamp);
     resultArray.push(
-      <a onClick={() => updateTime(seconds)} data-value={seconds}>
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid
+      <a
+        role='button'
+        tabIndex={0}
+        onClick={() => updateTime(seconds)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            updateTime(seconds);
+          }
+        }}
+        data-value={seconds}
+      >
         {timestamp}
       </a>
     );
     lastIndex = timestampPattern.lastIndex;
+    currentMatch = timestampPattern.exec(comment);
   }
   resultArray.push(replaceNewline(comment.slice(lastIndex)));
 
@@ -97,7 +117,19 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
     <div className='card' key={sec}>
       <header className='card-header has-background-light'>
         <p className='card-header-title'>
-          <a onClick={() => updateTime(sec)}>{secToTimeStr(sec)}</a>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <a
+            role='button'
+            tabIndex={0}
+            onClick={() => updateTime(sec)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                updateTime(sec);
+              }
+            }}
+          >
+            {secToTimeStr(sec)}
+          </a>
         </p>
       </header>
       <div className='card-content'>
@@ -115,7 +147,7 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
   );
 };
 
-export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
+export const useHooks: UseHooks<Props, HooksResult> = () => {
   const fetchedComments = useContext(FetchedCommentsStateContext);
   const selectedId = useContext(SelectedIdStateContext);
   const selectedSeconds = useContext(SelectedSecondsStateContext);
@@ -132,7 +164,7 @@ export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
       window.scrollBy(
         0,
         timestampElement.getBoundingClientRect().top -
-          document.querySelector('.header')!.scrollHeight
+          (document.querySelector('.header')?.scrollHeight ?? 0)
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

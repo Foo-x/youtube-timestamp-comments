@@ -5,15 +5,17 @@ type Model = boolean;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => [false, Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => [false, Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const IsApiKeyInvalidStateContext = createContext(false);
 export const IsApiKeyInvalidDispatchContext = createContext<Dispatch<Msg>>(
-  () => {}
+  () => {
+    // noop
+  }
 );
 
 export const view: View<Model, Msg, Props> = ({

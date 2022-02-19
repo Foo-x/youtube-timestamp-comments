@@ -5,16 +5,18 @@ type Model = SelectedSeconds;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => ['ALL', Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => ['ALL', Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const SelectedSecondsStateContext =
   createContext<SelectedSeconds>('ALL');
 export const SelectedSecondsDispatchContext = createContext<Dispatch<Msg>>(
-  () => {}
+  () => {
+    // noop
+  }
 );
 
 export const view: View<Model, Msg, Props> = ({

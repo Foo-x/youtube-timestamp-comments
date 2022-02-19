@@ -25,6 +25,9 @@ plugins:
   - '@typescript-eslint'
   - import
 rules:
+  no-void:
+    - error
+    - allowAsStatement: true
   react/jsx-filename-extension:
     - error
     - extensions:

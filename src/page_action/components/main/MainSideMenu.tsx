@@ -11,7 +11,7 @@ import { SelectedSecondsDispatchContext } from 'src/page_action/contexts/Selecte
 import { SideMenuRefStateContext } from 'src/page_action/contexts/SideMenuRefContext';
 import { SideMenuScrollStateContext } from 'src/page_action/contexts/SideMenuScrollContext';
 
-type Props = {};
+type Props = unknown;
 
 type HooksResult = {
   secondCommentIndexPairs: [number, number][];
@@ -21,10 +21,8 @@ type HooksResult = {
   setSelectedSeconds: (v: SelectedSeconds) => void;
 };
 
-export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
-  const {secondCommentIndexPairs} = useContext(
-    FetchedCommentsStateContext
-  );
+export const useHooks: UseHooks<Props, HooksResult> = () => {
+  const { secondCommentIndexPairs } = useContext(FetchedCommentsStateContext);
   const sideMenuScroll = useContext(SideMenuScrollStateContext);
   const sideMenuRef = useContext(SideMenuRefStateContext);
   const selectedId = useContext(SelectedIdStateContext);
@@ -33,7 +31,7 @@ export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
 
   useEffect(() => {
     sideMenuRef.current?.scroll(0, sideMenuScroll);
-  }, [sideMenuScroll, sideMenuRef.current]);
+  }, [sideMenuScroll, sideMenuRef]);
 
   return {
     secondCommentIndexPairs,
@@ -61,11 +59,20 @@ export const view: View<Props, HooksResult> = ({
         ref={sideMenuRef}
       >
         <li>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a
+            role='button'
+            tabIndex={0}
             className={selectedId === 'ALL' ? 'is-active' : ''}
             onClick={() => {
               setSelectedId('ALL');
               setSelectedSeconds('ALL');
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setSelectedId('ALL');
+                setSelectedSeconds('ALL');
+              }
             }}
           >
             ALL
@@ -75,20 +82,40 @@ export const view: View<Props, HooksResult> = ({
           const timeStr = secToTimeStr(sec);
           const button =
             selectedId === id ? (
-              <a className='is-active' onClick={() => updateTime(sec)}>
+              // eslint-disable-next-line jsx-a11y/anchor-is-valid
+              <a
+                role='button'
+                tabIndex={0}
+                className='is-active'
+                onClick={() => updateTime(sec)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    updateTime(sec);
+                  }
+                }}
+              >
                 {timeStr}
               </a>
             ) : (
+              // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
+                role='button'
+                tabIndex={0}
                 onClick={() => {
                   setSelectedId(id);
                   setSelectedSeconds(sec);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setSelectedId(id);
+                    setSelectedSeconds(sec);
+                  }
                 }}
               >
                 {timeStr}
               </a>
             );
-          return <li key={id}>{button}</li>;
+          return <li key={sec}>{button}</li>;
         })}
       </ul>
     </aside>

@@ -12,8 +12,8 @@ const extractTimestampSeconds = (comment: string): number[] => {
         const [first, second, third] = timestamp.split(':');
         const [h, m, s] =
           third === undefined
-            ? [0, parseInt(first), parseInt(second)]
-            : [parseInt(first), parseInt(second), parseInt(third)];
+            ? [0, parseInt(first, 10), parseInt(second, 10)]
+            : [parseInt(first, 10), parseInt(second, 10), parseInt(third, 10)];
         return h * 3600 + m * 60 + s;
       })
     )
@@ -29,7 +29,7 @@ export const createFetchedComments = (comments: string[]): FetchedComments => {
     .filter(([_, seconds]) => seconds.length > 0);
   const secondCommentIndexPairs = commentSecondsPairs
     .map(([_, seconds], index) => {
-      return seconds.map((second) => [second, index]) ;
+      return seconds.map<[number, number]>((second) => [second, index]);
     })
     .flat()
     .sort(([aSec, aIndex], [bSec, bIndex]) => {

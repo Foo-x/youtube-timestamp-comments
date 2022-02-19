@@ -28,7 +28,8 @@ if (!chrome.runtime.onMessage.hasListeners()) {
 
   const init = (): WithVideoId => ({
     state: 'with-video-id',
-    videoId: new URLSearchParams(document.location.search).get('v')! as VideoId,
+    videoId: (new URLSearchParams(document.location.search).get('v') ??
+      '') as VideoId,
     lock: new AsyncLock(),
   });
   let model: Model = init();
@@ -39,29 +40,29 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     chrome.runtime.sendMessage(responseMsg);
   };
 
-  const sendPageResponse = (model: WithPageToken | LastPageLoaded) => {
-    if (model.state === 'with-page-token') {
+  const sendPageResponse = (newModel: WithPageToken | LastPageLoaded) => {
+    if (newModel.state === 'with-page-token') {
       sendResponse({
         type: 'page',
-        data: model.fetchedSeconds,
-        totalCount: model.totalCount,
+        data: newModel.fetchedSeconds,
+        totalCount: newModel.totalCount,
         isLast: false,
       });
     } else {
       sendResponse({
         type: 'page',
-        data: model.fetchedSeconds,
-        totalCount: model.totalCount,
+        data: newModel.fetchedSeconds,
+        totalCount: newModel.totalCount,
         isLast: true,
       });
     }
   };
 
   const sendViewPropsResponseIfExists = (
-    model: WithPageToken | LastPageLoaded
+    newModel: WithPageToken | LastPageLoaded
   ) => {
-    if (model.viewProps !== undefined) {
-      sendResponse({ type: 'view-props', data: model.viewProps });
+    if (newModel.viewProps !== undefined) {
+      sendResponse({ type: 'view-props', data: newModel.viewProps });
     }
   };
 
@@ -79,6 +80,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       return;
     }
     if (model.state === 'with-video-id') {
+      // eslint-disable-next-line no-use-before-define
       update({ type: 'next-page' });
       return;
     }
@@ -124,8 +126,8 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     sendPageResponse(model);
   };
 
-  const onNextPage = async () => {
-    model.lock.acquire('key', async () => {
+  const onNextPage = () => {
+    void model.lock.acquire('key', async () => {
       if (model.state === 'last-page-loaded') {
         sendPageResponse(model);
         return;
@@ -136,7 +138,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         return;
       }
       if (model.state === 'with-video-id') {
-        onFirstPage();
+        void onFirstPage();
         return;
       }
 
@@ -152,7 +154,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         ...model.fetchedSeconds.comments,
         ...pageResult.comments,
       ]);
-      const {viewProps} = model;
+      const { viewProps } = model;
       model = pageResult.pageToken
         ? {
             state: 'with-page-token',
@@ -175,9 +177,9 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     });
   };
 
-  const update = async (msg: MsgToCS) => {
+  const update = (msg: MsgToCS) => {
     if (msg.type === 'cache') {
-      onCache();
+      void onCache();
       return;
     }
     if (msg.type === 'next-page') {
@@ -189,7 +191,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       (model.state === 'with-page-token' || model.state === 'last-page-loaded')
     ) {
       model.viewProps = msg.data;
-      
     }
   };
 

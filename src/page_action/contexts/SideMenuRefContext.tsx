@@ -5,9 +5,9 @@ type Model = RefObject<HTMLUListElement>;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => [createRef(), Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => [createRef(), Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 

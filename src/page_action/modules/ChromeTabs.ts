@@ -1,38 +1,50 @@
 export const sendMessage = (message: MsgToCS) => {
-  return new Promise<void>((resolve) =>
+  return new Promise<void>((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id!, message);
+      const { id } = tabs[0];
+      if (id != null) {
+        chrome.tabs.sendMessage(id, message);
+      }
       resolve();
-    })
-  );
+    });
+  });
 };
 
 export const initContentScript = () => {
-  return new Promise<void>((resolve) =>
+  return new Promise<void>((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.scripting.executeScript(
-        {
-          target: {
-            tabId: tabs[0].id!,
+      const { id } = tabs[0];
+      if (id != null) {
+        chrome.scripting.executeScript(
+          {
+            target: {
+              tabId: id,
+            },
+            files: ['js/content_scripts/contentScript.js'],
           },
-          files: ['js/content_scripts/contentScript.js'],
-        },
-        () => resolve()
-      );
-    })
-  );
+          () => resolve()
+        );
+      }
+    });
+  });
 };
 
 export const updateTime = (sec: number) => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.scripting.executeScript({
-      target: {
-        tabId: tabs[0].id!,
-      },
-      args: [sec],
-      func: (sec: number) => {
-        document.querySelector('video')!.currentTime = sec;
-      },
-    });
+    const { id } = tabs[0];
+    if (id != null) {
+      void chrome.scripting.executeScript({
+        target: {
+          tabId: id,
+        },
+        args: [sec],
+        func: (sec_: number) => {
+          const video = document.querySelector('video');
+          if (video != null) {
+            video.currentTime = sec_;
+          }
+        },
+      });
+    }
   });
 };

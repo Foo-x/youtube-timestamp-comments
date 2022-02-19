@@ -5,14 +5,16 @@ type Model = boolean;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => [false, Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => [false, Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const IsProgressStateContext = createContext(false);
-export const IsProgressDispatchContext = createContext<Dispatch<Msg>>(() => {});
+export const IsProgressDispatchContext = createContext<Dispatch<Msg>>(() => {
+  // noop
+});
 
 export const view: View<Model, Msg, Props> = ({
   model,

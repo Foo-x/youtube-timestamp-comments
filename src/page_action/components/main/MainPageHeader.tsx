@@ -22,7 +22,7 @@ import {
 } from 'src/page_action/contexts/SideMenuScrollContext';
 import { TotalCountStateContext } from 'src/page_action/contexts/TotalCountContext';
 
-type Props = {};
+type Props = unknown;
 
 type HooksResult = {
   totalCount: number;
@@ -35,7 +35,7 @@ type HooksResult = {
   fetchNextPage: () => void;
 };
 
-export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
+export const useHooks: UseHooks<Props, HooksResult> = () => {
   const totalCount = useContext(TotalCountStateContext);
   const isLast = useContext(IsLastStateContext);
   const isProgress = useContext(IsProgressStateContext);
@@ -59,7 +59,7 @@ export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
 
   const fetchNextPage = useCallback(() => {
     setIsProgress(true);
-    sendMessage({ type: 'next-page' });
+    void sendMessage({ type: 'next-page' });
   }, [setIsProgress]);
 
   return {
@@ -97,9 +97,17 @@ export const view: View<Props, HooksResult> = ({
             </div>
           </div>
           <div className='navbar-end'>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a
+              role='button'
+              tabIndex={0}
               className={isLast ? 'navbar-item disabled' : 'navbar-item'}
               onClick={fetchNextPage}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  fetchNextPage();
+                }
+              }}
             >
               <span className='icon'>
                 <i className='fas fa-angle-right fa-lg' />

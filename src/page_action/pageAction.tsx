@@ -93,19 +93,18 @@ const PageAction = () => {
         }
         setIsApiKeyInvalid(true);
         history.push('/config');
-        
       }
     });
 
     setIsProgress(true);
-    initContentScript().then(() => {
-      sendMessage({ type: 'cache' });
+    void initContentScript().then(() => {
+      void sendMessage({ type: 'cache' });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     window.onblur = () => {
-      sendMessage({
+      void sendMessage({
         type: 'save-view-props',
         data: {
           scroll: location.pathname === '/' ? window.scrollY : scroll,
@@ -117,13 +116,7 @@ const PageAction = () => {
         },
       });
     };
-  }, [
-    location.pathname,
-    scroll,
-    sideMenuScroll,
-    selectedId,
-    sideMenuRef.current,
-  ]);
+  }, [location.pathname, scroll, sideMenuScroll, selectedId, sideMenuRef]);
   useEffect(() => {
     if (location.pathname === '/') {
       window.scroll(0, scroll);

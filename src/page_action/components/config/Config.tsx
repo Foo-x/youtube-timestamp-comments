@@ -10,14 +10,14 @@ type Model = string;
 
 type Msg = Model;
 
-type Props = {};
+type Props = unknown;
 
 type HooksResult = {
   isApiKeyInvalid: boolean;
   setIsApiKeyInvalid: (v: boolean) => void;
 };
 
-export const init: Init<Model, Msg, Props> = ({}) => [
+export const init: Init<Model, Msg, Props> = () => [
   '',
   Cmd.promise(async (dispatch) => {
     dispatch((await getApiKey()) ?? '');
@@ -30,7 +30,7 @@ export const update: Update<Model, Msg, Props> = ({ msg }) => {
 };
 export const subscriptions: Sub<Model, Msg, Props> = Sub.none();
 
-export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
+export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = () => {
   return {
     isApiKeyInvalid: useContext(IsApiKeyInvalidStateContext),
     setIsApiKeyInvalid: useContext(IsApiKeyInvalidDispatchContext),
@@ -49,6 +49,7 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
           {isApiKeyInvalid ? 'Set a valid API key.' : ''}
         </div>
         <div className='field'>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className='label' htmlFor='api-key-input'>
             API Key
           </label>

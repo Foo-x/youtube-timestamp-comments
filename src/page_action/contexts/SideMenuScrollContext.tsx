@@ -5,15 +5,17 @@ type Model = number;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => [0, Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => [0, Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const SideMenuScrollStateContext = createContext(0);
 export const SideMenuScrollDispatchContext = createContext<Dispatch<Msg>>(
-  () => {}
+  () => {
+    // noop
+  }
 );
 
 export const view: View<Model, Msg, Props> = ({

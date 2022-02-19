@@ -5,14 +5,16 @@ type Model = SelectedId;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
-export const init: Init<Model, Msg, Props> = ({}) => ['ALL', Cmd.none()];
+export const init: Init<Model, Msg, Props> = () => ['ALL', Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const SelectedIdStateContext = createContext<SelectedId>('ALL');
-export const SelectedIdDispatchContext = createContext<Dispatch<Msg>>(() => {});
+export const SelectedIdDispatchContext = createContext<Dispatch<Msg>>(() => {
+  // noop
+});
 
 export const view: View<Model, Msg, Props> = ({
   model,

@@ -5,7 +5,7 @@ type Model = FetchedComments;
 
 type Msg = Model;
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<unknown>;
 
 export const init: Init<Model, Msg, Props> = () => [
   {
@@ -22,7 +22,9 @@ export const FetchedCommentsStateContext = createContext<FetchedComments>({
   secondCommentIndexPairs: [],
 });
 export const FetchedCommentsDispatchContext = createContext<Dispatch<Msg>>(
-  () => {}
+  () => {
+    // noop
+  }
 );
 
 export const view: View<Model, Msg, Props> = ({
