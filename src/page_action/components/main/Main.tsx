@@ -156,7 +156,7 @@ export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
             ],
           ]
         );
-  }, []);
+  }, [fetchedComments, selectedId]);
 
   return { content };
 };
