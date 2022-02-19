@@ -9,7 +9,7 @@ const extractTimestampSeconds = (comment: string): number[] => {
   return Array.from(
     new Set(
       timestamps.map((timestamp) => {
-        const [first, second, third] = timestamp.split(":");
+        const [first, second, third] = timestamp.split(':');
         const [h, m, s] =
           third === undefined
             ? [0, parseInt(first), parseInt(second)]
@@ -29,7 +29,7 @@ export const createFetchedComments = (comments: string[]): FetchedComments => {
     .filter(([_, seconds]) => seconds.length > 0);
   const secondCommentIndexPairs = commentSecondsPairs
     .map(([_, seconds], index) => {
-      return seconds.map((second) => [second, index]) as [number, number][];
+      return seconds.map((second) => [second, index]) ;
     })
     .flat()
     .sort(([aSec, aIndex], [bSec, bIndex]) => {

@@ -8,7 +8,7 @@ export const setApiKey = (key: string): void => {
 
 export const getApiKey = async (): Promise<string | undefined> => {
   return await new Promise((resolve) =>
-    chrome.storage.sync.get("key", (storage: Storage) => {
+    chrome.storage.sync.get('key', (storage: Storage) => {
       resolve(storage.key);
     })
   );

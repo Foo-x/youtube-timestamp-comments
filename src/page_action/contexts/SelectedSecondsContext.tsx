@@ -1,5 +1,5 @@
-import { Cmd, Init, Sub, Tea, Update, View } from "@foo-x/react-tea";
-import { createContext, Dispatch, PropsWithChildren } from "react";
+import { Cmd, Init, Sub, Tea, Update, View } from '@foo-x/react-tea';
+import { createContext, Dispatch, PropsWithChildren } from 'react';
 
 type Model = SelectedSeconds;
 
@@ -7,12 +7,12 @@ type Msg = Model;
 
 type Props = PropsWithChildren<{}>;
 
-export const init: Init<Model, Msg, Props> = ({}) => ["ALL", Cmd.none()];
+export const init: Init<Model, Msg, Props> = ({}) => ['ALL', Cmd.none()];
 
 export const update: Update<Model, Msg, Props> = ({ msg }) => [msg, Cmd.none()];
 
 export const SelectedSecondsStateContext =
-  createContext<SelectedSeconds>("ALL");
+  createContext<SelectedSeconds>('ALL');
 export const SelectedSecondsDispatchContext = createContext<Dispatch<Msg>>(
   () => {}
 );

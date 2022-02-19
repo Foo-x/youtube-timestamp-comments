@@ -106,7 +106,7 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
           .reduce((pre, cur) => (
             <>
               {pre}
-              <div className='is-divider'></div>
+              <div className='is-divider' />
               {cur}
             </>
           ))}

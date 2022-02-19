@@ -1,5 +1,5 @@
-import { Cmd, Init, Sub, Tea, Update, View } from "@foo-x/react-tea";
-import { createContext, Dispatch, PropsWithChildren } from "react";
+import { Cmd, Init, Sub, Tea, Update, View } from '@foo-x/react-tea';
+import { createContext, Dispatch, PropsWithChildren } from 'react';
 
 type Model = boolean;
 

@@ -1,5 +1,5 @@
-import { Cmd, Init, Sub, Tea, Update, View } from "@foo-x/react-tea";
-import { createContext, createRef, PropsWithChildren, RefObject } from "react";
+import { Cmd, Init, Sub, Tea, Update, View } from '@foo-x/react-tea';
+import { createContext, createRef, PropsWithChildren, RefObject } from 'react';
 
 type Model = RefObject<HTMLUListElement>;
 

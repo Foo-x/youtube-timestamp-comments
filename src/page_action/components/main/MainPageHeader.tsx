@@ -1,5 +1,5 @@
-import { Container, UseHooks, View } from "@foo-x/react-container";
-import { sendMessage } from "pa/modules/ChromeTabs";
+import { Container, UseHooks, View } from '@foo-x/react-container';
+import { sendMessage } from 'pa/modules/ChromeTabs';
 import {
   memo,
   ReactElement,
@@ -7,20 +7,20 @@ import {
   useCallback,
   useContext,
   useMemo,
-} from "react";
-import { Link } from "react-router-dom";
-import { IsLastStateContext } from "src/page_action/contexts/IsLastContext";
+} from 'react';
+import { Link } from 'react-router-dom';
+import { IsLastStateContext } from 'src/page_action/contexts/IsLastContext';
 import {
   IsProgressDispatchContext,
   IsProgressStateContext,
-} from "src/page_action/contexts/IsProgressContext";
-import { ScrollDispatchContext } from "src/page_action/contexts/ScrollContext";
-import { SideMenuRefStateContext } from "src/page_action/contexts/SideMenuRefContext";
+} from 'src/page_action/contexts/IsProgressContext';
+import { ScrollDispatchContext } from 'src/page_action/contexts/ScrollContext';
+import { SideMenuRefStateContext } from 'src/page_action/contexts/SideMenuRefContext';
 import {
   SideMenuScrollDispatchContext,
   SideMenuScrollStateContext,
-} from "src/page_action/contexts/SideMenuScrollContext";
-import { TotalCountStateContext } from "src/page_action/contexts/TotalCountContext";
+} from 'src/page_action/contexts/SideMenuScrollContext';
+import { TotalCountStateContext } from 'src/page_action/contexts/TotalCountContext';
 
 type Props = {};
 
@@ -49,17 +49,17 @@ export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
     () =>
       isProgress ? (
         <div>
-          <progress className="progress is-info" />
+          <progress className='progress is-info' />
         </div>
       ) : (
-        <div className="progress-stopped"></div>
+        <div className='progress-stopped' />
       ),
     [isProgress]
   );
 
   const fetchNextPage = useCallback(() => {
     setIsProgress(true);
-    sendMessage({ type: "next-page" });
+    sendMessage({ type: 'next-page' });
   }, [setIsProgress]);
 
   return {
@@ -87,27 +87,27 @@ export const view: View<Props, HooksResult> = ({
   },
 }) => {
   return (
-    <header className="header">
-      <nav className="navbar">
-        <div className="navbar-menu is-flex">
-          <div className="navbar-start flex-grow-1">
-            <div className="navbar-item">
+    <header className='header'>
+      <nav className='navbar'>
+        <div className='navbar-menu is-flex'>
+          <div className='navbar-start flex-grow-1'>
+            <div className='navbar-item'>
               {totalCount}
-              {isLast ? "" : "+"}
+              {isLast ? '' : '+'}
             </div>
           </div>
-          <div className="navbar-end">
+          <div className='navbar-end'>
             <a
-              className={isLast ? "navbar-item disabled" : "navbar-item"}
+              className={isLast ? 'navbar-item disabled' : 'navbar-item'}
               onClick={fetchNextPage}
             >
-              <span className="icon">
-                <i className="fas fa-angle-right fa-lg" />
+              <span className='icon'>
+                <i className='fas fa-angle-right fa-lg' />
               </span>
             </a>
             <Link
-              to="/config"
-              className="navbar-item"
+              to='/config'
+              className='navbar-item'
               onClick={() => {
                 setScroll(window.scrollY);
                 setSideMenuScroll(
@@ -115,8 +115,8 @@ export const view: View<Props, HooksResult> = ({
                 );
               }}
             >
-              <span className="icon">
-                <i className="fas fa-cog fa-sm" />
+              <span className='icon'>
+                <i className='fas fa-cog fa-sm' />
               </span>
             </Link>
           </div>

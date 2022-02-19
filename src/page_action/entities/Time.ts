@@ -4,9 +4,9 @@ export const secToTimeStr = (sec: number): string => {
   const seconds = sec % 60;
 
   return hours === 0
-    ? `${minutes}:${("" + seconds).padStart(2, "0")}`
-    : `${hours}:${("" + minutes).padStart(2, "0")}:${("" + seconds).padStart(
+    ? `${minutes}:${String(seconds).padStart(2, '0')}`
+    : `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
         2,
-        "0"
+        '0'
       )}`;
 };

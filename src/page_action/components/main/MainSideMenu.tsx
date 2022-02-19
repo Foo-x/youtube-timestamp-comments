@@ -1,15 +1,15 @@
-import { Container, UseHooks, View } from "@foo-x/react-container";
-import { secToTimeStr } from "pa/entities/Time";
-import { updateTime } from "pa/modules/ChromeTabs";
-import { RefObject, useContext, useEffect } from "react";
-import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
+import { Container, UseHooks, View } from '@foo-x/react-container';
+import { secToTimeStr } from 'pa/entities/Time';
+import { updateTime } from 'pa/modules/ChromeTabs';
+import { RefObject, useContext, useEffect } from 'react';
+import { FetchedCommentsStateContext } from 'src/page_action/contexts/FetchedCommentsContext';
 import {
   SelectedIdDispatchContext,
   SelectedIdStateContext,
-} from "src/page_action/contexts/SelectedIdContext";
-import { SelectedSecondsDispatchContext } from "src/page_action/contexts/SelectedSecondsContext";
-import { SideMenuRefStateContext } from "src/page_action/contexts/SideMenuRefContext";
-import { SideMenuScrollStateContext } from "src/page_action/contexts/SideMenuScrollContext";
+} from 'src/page_action/contexts/SelectedIdContext';
+import { SelectedSecondsDispatchContext } from 'src/page_action/contexts/SelectedSecondsContext';
+import { SideMenuRefStateContext } from 'src/page_action/contexts/SideMenuRefContext';
+import { SideMenuScrollStateContext } from 'src/page_action/contexts/SideMenuScrollContext';
 
 type Props = {};
 
@@ -22,9 +22,9 @@ type HooksResult = {
 };
 
 export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
-  const secondCommentIndexPairs = useContext(
+  const {secondCommentIndexPairs} = useContext(
     FetchedCommentsStateContext
-  ).secondCommentIndexPairs;
+  );
   const sideMenuScroll = useContext(SideMenuScrollStateContext);
   const sideMenuRef = useContext(SideMenuRefStateContext);
   const selectedId = useContext(SelectedIdStateContext);
@@ -54,18 +54,18 @@ export const view: View<Props, HooksResult> = ({
   },
 }) => {
   return (
-    <aside className="menu column is-4">
+    <aside className='menu column is-4'>
       <ul
-        id="side-menu-list"
-        className="menu-list side-menu-list"
+        id='side-menu-list'
+        className='menu-list side-menu-list'
         ref={sideMenuRef}
       >
         <li>
           <a
-            className={selectedId === "ALL" ? "is-active" : ""}
+            className={selectedId === 'ALL' ? 'is-active' : ''}
             onClick={() => {
-              setSelectedId("ALL");
-              setSelectedSeconds("ALL");
+              setSelectedId('ALL');
+              setSelectedSeconds('ALL');
             }}
           >
             ALL
@@ -75,7 +75,7 @@ export const view: View<Props, HooksResult> = ({
           const timeStr = secToTimeStr(sec);
           const button =
             selectedId === id ? (
-              <a className="is-active" onClick={() => updateTime(sec)}>
+              <a className='is-active' onClick={() => updateTime(sec)}>
                 {timeStr}
               </a>
             ) : (

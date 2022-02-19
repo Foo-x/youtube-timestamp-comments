@@ -15,7 +15,7 @@ export const initContentScript = () => {
           target: {
             tabId: tabs[0].id!,
           },
-          files: ["js/content_scripts/contentScript.js"],
+          files: ['js/content_scripts/contentScript.js'],
         },
         () => resolve()
       );
@@ -31,7 +31,7 @@ export const updateTime = (sec: number) => {
       },
       args: [sec],
       func: (sec: number) => {
-        document.querySelector("video")!.currentTime = sec;
+        document.querySelector('video')!.currentTime = sec;
       },
     });
   });

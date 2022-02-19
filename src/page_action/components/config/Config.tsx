@@ -1,10 +1,10 @@
-import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from "@foo-x/react-tea";
-import { useContext } from "react";
-import { getApiKey, setApiKey } from "src/modules/ChromeStorage";
+import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from '@foo-x/react-tea';
+import { useContext } from 'react';
+import { getApiKey, setApiKey } from 'src/modules/ChromeStorage';
 import {
   IsApiKeyInvalidDispatchContext,
   IsApiKeyInvalidStateContext,
-} from "src/page_action/contexts/IsApiKeyInvalidContext";
+} from 'src/page_action/contexts/IsApiKeyInvalidContext';
 
 type Model = string;
 
@@ -18,9 +18,9 @@ type HooksResult = {
 };
 
 export const init: Init<Model, Msg, Props> = ({}) => [
-  "",
+  '',
   Cmd.promise(async (dispatch) => {
-    dispatch((await getApiKey()) ?? "");
+    dispatch((await getApiKey()) ?? '');
   }),
 ];
 
@@ -43,22 +43,22 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
   hooksResult: { isApiKeyInvalid, setIsApiKeyInvalid },
 }) => {
   return (
-    <main className="config main-container" role="main">
-      <section className="section">
-        <div className="error-message">
-          {isApiKeyInvalid ? "Set a valid API key." : ""}
+    <main className='config main-container' role='main'>
+      <section className='section'>
+        <div className='error-message'>
+          {isApiKeyInvalid ? 'Set a valid API key.' : ''}
         </div>
-        <div className="field">
-          <label className="label" htmlFor="api-key-input">
+        <div className='field'>
+          <label className='label' htmlFor='api-key-input'>
             API Key
           </label>
-          <div className="control">
+          <div className='control'>
             <input
-              id="api-key-input"
-              name="api-key-input"
-              className="api-key-input input"
-              type="password"
-              placeholder="AIza..."
+              id='api-key-input'
+              name='api-key-input'
+              className='api-key-input input'
+              type='password'
+              placeholder='AIza...'
               value={key}
               onFocus={(event) => event.currentTarget.select()}
               onInput={(event) => {
@@ -68,21 +68,21 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
             />
           </div>
         </div>
-        <ul className="setup">
+        <ul className='setup'>
           <li>
             <a
-              href="https://github.com/Foo-x/youtube-timestamp-comments/blob/master/README.md"
-              target="_blank"
-              rel="noreferrer"
+              href='https://github.com/Foo-x/youtube-timestamp-comments/blob/master/README.md'
+              target='_blank'
+              rel='noreferrer'
             >
               Set up
             </a>
           </li>
           <li>
             <a
-              href="https://github.com/Foo-x/youtube-timestamp-comments/blob/master/README.ja.md"
-              target="_blank"
-              rel="noreferrer"
+              href='https://github.com/Foo-x/youtube-timestamp-comments/blob/master/README.ja.md'
+              target='_blank'
+              rel='noreferrer'
             >
               設定
             </a>
