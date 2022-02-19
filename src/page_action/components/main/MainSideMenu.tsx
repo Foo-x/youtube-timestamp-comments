@@ -1,4 +1,4 @@
-import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from "@foo-x/react-tea";
+import { Container, UseHooks, View } from "@foo-x/react-container";
 import { secToTimeStr } from "pa/entities/Time";
 import { updateTime } from "pa/modules/ChromeTabs";
 import { RefObject, useContext, useEffect } from "react";
@@ -11,10 +11,6 @@ import { SelectedSecondsDispatchContext } from "src/page_action/contexts/Selecte
 import { SideMenuRefStateContext } from "src/page_action/contexts/SideMenuRefContext";
 import { SideMenuScrollStateContext } from "src/page_action/contexts/SideMenuScrollContext";
 
-type Model = null;
-
-type Msg = Model;
-
 type Props = {};
 
 type HooksResult = {
@@ -25,14 +21,7 @@ type HooksResult = {
   setSelectedSeconds: (v: SelectedSeconds) => void;
 };
 
-export const init: Init<Model, Msg, Props> = ({}) => [null, Cmd.none()];
-
-export const update: Update<Model, Msg, Props> = ({}) => {
-  return [null, Cmd.none()];
-};
-export const subscriptions: Sub<Model, Msg, Props> = Sub.none();
-
-export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
+export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
   const secondCommentIndexPairs = useContext(
     FetchedCommentsStateContext
   ).secondCommentIndexPairs;
@@ -55,7 +44,7 @@ export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
   };
 };
 
-export const view: View<Model, Msg, Props, HooksResult> = ({
+export const view: View<Props, HooksResult> = ({
   hooksResult: {
     secondCommentIndexPairs,
     sideMenuRef,
@@ -106,6 +95,6 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
   );
 };
 
-const MainSideMenu = Tea({ init, update, subscriptions, useHooks, view });
+const MainSideMenu = Container({ useHooks, view });
 
 export default MainSideMenu;

@@ -1,6 +1,7 @@
-import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from "@foo-x/react-tea";
+import { Container, UseHooks, View } from "@foo-x/react-container";
 import { sendMessage } from "pa/modules/ChromeTabs";
 import {
+  memo,
   ReactElement,
   RefObject,
   useCallback,
@@ -21,10 +22,6 @@ import {
 } from "src/page_action/contexts/SideMenuScrollContext";
 import { TotalCountStateContext } from "src/page_action/contexts/TotalCountContext";
 
-type Model = null;
-
-type Msg = Model;
-
 type Props = {};
 
 type HooksResult = {
@@ -38,14 +35,7 @@ type HooksResult = {
   fetchNextPage: () => void;
 };
 
-export const init: Init<Model, Msg, Props> = ({}) => [null, Cmd.none()];
-
-export const update: Update<Model, Msg, Props> = ({}) => {
-  return [null, Cmd.none()];
-};
-export const subscriptions: Sub<Model, Msg, Props> = Sub.none();
-
-export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
+export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
   const totalCount = useContext(TotalCountStateContext);
   const isLast = useContext(IsLastStateContext);
   const isProgress = useContext(IsProgressStateContext);
@@ -84,7 +74,7 @@ export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = ({}) => {
   };
 };
 
-export const view: View<Model, Msg, Props, HooksResult> = ({
+export const view: View<Props, HooksResult> = ({
   hooksResult: {
     totalCount,
     isLast,
@@ -137,6 +127,6 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
   );
 };
 
-const MainPageHeader = Tea({ init, update, subscriptions, useHooks, view });
+const MainPageHeader = Container({ useHooks, view });
 
-export default MainPageHeader;
+export default memo(MainPageHeader);
