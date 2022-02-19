@@ -1,12 +1,19 @@
-import { secToTimeStr } from "pa/entities/Time";
-import { updateTime } from "pa/modules/ChromeTabs";
-import { memo, useContext, useEffect } from "react";
-import { FetchedCommentsStateContext } from "src/page_action/contexts/FetchedCommentsContext";
-import { SelectedIdStateContext } from "src/page_action/contexts/SelectedIdContext";
-import { SelectedSecondsStateContext } from "src/page_action/contexts/SelectedSecondsContext";
-import MainSideMenu from "./MainSideMenu";
+import { Container, UseHooks, View } from '@foo-x/react-container';
+import { secToTimeStr } from 'pa/entities/Time';
+import { updateTime } from 'pa/modules/ChromeTabs';
+import { memo, ReactElement, useContext, useEffect, useMemo } from 'react';
+import { FetchedCommentsStateContext } from 'src/page_action/contexts/FetchedCommentsContext';
+import { SelectedIdStateContext } from 'src/page_action/contexts/SelectedIdContext';
+import { SelectedSecondsStateContext } from 'src/page_action/contexts/SelectedSecondsContext';
+import MainSideMenu from './MainSideMenu';
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
+
+type Props = {};
+
+type HooksResult = {
+  content: ReactElement | ReactElement[];
+};
 
 const uniqueIndices = (
   fetchedComments: FetchedComments
@@ -36,7 +43,7 @@ const createS2C = (secondCommentPairs: [number, string][]): Second2Comments => {
 };
 
 const timestampToSeconds = (timestamp: string): number => {
-  const [first, second, third] = timestamp.split(":");
+  const [first, second, third] = timestamp.split(':');
   const [h, m, s] =
     third === undefined
       ? [0, parseInt(first), parseInt(second)]
@@ -46,7 +53,7 @@ const timestampToSeconds = (timestamp: string): number => {
 
 const replaceNewline = (text: string): JSX.Element => {
   return text
-    .split("\n")
+    .split('\n')
     .map((text_) => <>{text_}</>)
     .reduce((pre, cur) => (
       <>
@@ -87,19 +94,19 @@ const replaceTimeLink = (comment: string): JSX.Element => {
 
 const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
   return (
-    <div className="card" key={sec}>
-      <header className="card-header has-background-light">
-        <p className="card-header-title">
+    <div className='card' key={sec}>
+      <header className='card-header has-background-light'>
+        <p className='card-header-title'>
           <a onClick={() => updateTime(sec)}>{secToTimeStr(sec)}</a>
         </p>
       </header>
-      <div className="card-content">
+      <div className='card-content'>
         {comments
           .map((comment) => <div key={comment}>{replaceTimeLink(comment)}</div>)
           .reduce((pre, cur) => (
             <>
               {pre}
-              <div className="is-divider"></div>
+              <div className='is-divider'></div>
               {cur}
             </>
           ))}
@@ -108,13 +115,31 @@ const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
   );
 };
 
-const Main = () => {
+export const useHooks: UseHooks<Props, HooksResult> = ({}) => {
   const fetchedComments = useContext(FetchedCommentsStateContext);
   const selectedId = useContext(SelectedIdStateContext);
   const selectedSeconds = useContext(SelectedSecondsStateContext);
 
-  const content =
-    selectedId === "ALL"
+  useEffect(() => {
+    if (selectedId === 'ALL') {
+      window.scroll(0, 0);
+      return;
+    }
+    const timestampElement = document.querySelector(
+      `[data-value="${selectedSeconds}"]`
+    );
+    if (timestampElement) {
+      window.scrollBy(
+        0,
+        timestampElement.getBoundingClientRect().top -
+          document.querySelector('.header')!.scrollHeight
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
+
+  const content = useMemo(() => {
+    return selectedId === 'ALL'
       ? Array.from(
           createS2C(
             uniqueIndices(fetchedComments).map(([sec, index]) => [
@@ -131,30 +156,22 @@ const Main = () => {
             ],
           ]
         );
-  useEffect(() => {
-    if (selectedId === "ALL") {
-      window.scroll(0, 0);
-      return;
-    }
-    const timestampElement = document.querySelector(
-      `[data-value="${selectedSeconds}"]`
-    );
-    if (timestampElement) {
-      window.scrollBy(
-        0,
-        timestampElement.getBoundingClientRect().top -
-          document.querySelector(".header")!.scrollHeight
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedId]);
+  }, []);
 
+  return { content };
+};
+
+export const view: View<Props, HooksResult> = ({
+  hooksResult: { content },
+}) => {
   return (
-    <main className="columns is-mobile is-gapless main-container" role="main">
+    <main className='columns is-mobile is-gapless main-container' role='main'>
       <MainSideMenu />
-      <section className="column is-8">{content}</section>
+      <section className='column is-8'>{content}</section>
     </main>
   );
 };
+
+const Main = Container({ useHooks, view });
 
 export default memo(Main);
