@@ -1,3 +1,4 @@
+import { Container, UseHooks, View } from '@foo-x/react-container';
 import '@fortawesome/fontawesome-free/css/fontawesome.css';
 import '@fortawesome/fontawesome-free/css/solid.css';
 import '@fortawesome/fontawesome-free/js/fontawesome';
@@ -48,7 +49,11 @@ import { initContentScript, sendMessage } from './modules/ChromeTabs';
 import ConfigPage from './pages/config';
 import MainPage from './pages/main';
 
-const PageAction = () => {
+type Props = unknown;
+
+type HooksResult = unknown;
+
+const useHooks: UseHooks<Props, HooksResult> = ({ props }) => {
   const location = useLocation();
   const history = useHistory();
 
@@ -122,7 +127,9 @@ const PageAction = () => {
       window.scroll(0, scroll);
     }
   }, [location.pathname, scroll]);
+};
 
+const view: View<Props, HooksResult> = ({ props, hooksResult }) => {
   return (
     <>
       <Route exact path='/'>
@@ -134,6 +141,8 @@ const PageAction = () => {
     </>
   );
 };
+
+const PageAction = Container({ useHooks, view });
 
 ReactDOM.render(
   <React.StrictMode>
