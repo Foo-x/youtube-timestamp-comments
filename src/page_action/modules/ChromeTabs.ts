@@ -39,7 +39,7 @@ export const updateTime = (sec: number) => {
         },
         args: [sec],
         func: (sec_: number) => {
-          const video = document.querySelector('video');
+          const video = document.querySelector<HTMLVideoElement>('video[src]');
           if (video != null) {
             video.currentTime = sec_;
           }
