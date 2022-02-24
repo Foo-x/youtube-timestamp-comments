@@ -78,7 +78,7 @@ export const view: View<Props, HooksResult> = ({
             ALL
           </a>
         </li>
-        {secondCommentIndexPairs.map(([sec], id) => {
+        {secondCommentIndexPairs.map(([sec, index], id) => {
           const timeStr = secToTimeStr(sec);
           const button =
             selectedId === id ? (
@@ -115,7 +115,7 @@ export const view: View<Props, HooksResult> = ({
                 {timeStr}
               </a>
             );
-          return <li key={sec}>{button}</li>;
+          return <li key={`${sec}-${index}`}>{button}</li>;
         })}
       </ul>
     </aside>
