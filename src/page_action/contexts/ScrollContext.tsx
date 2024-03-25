@@ -19,7 +19,7 @@ export const ScrollDispatchContext = createContext<Dispatch<Msg>>(() => {
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <ScrollStateContext.Provider value={model}>

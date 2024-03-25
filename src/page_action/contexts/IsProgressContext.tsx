@@ -19,7 +19,7 @@ export const IsProgressDispatchContext = createContext<Dispatch<Msg>>(() => {
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <IsProgressStateContext.Provider value={model}>

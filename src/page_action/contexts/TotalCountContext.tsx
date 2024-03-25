@@ -19,7 +19,7 @@ export const TotalCountDispatchContext = createContext<Dispatch<Msg>>(() => {
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <TotalCountStateContext.Provider value={model}>

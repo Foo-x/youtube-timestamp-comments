@@ -15,13 +15,13 @@ export const SideMenuScrollStateContext = createContext(0);
 export const SideMenuScrollDispatchContext = createContext<Dispatch<Msg>>(
   () => {
     // noop
-  }
+  },
 );
 
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <SideMenuScrollStateContext.Provider value={model}>

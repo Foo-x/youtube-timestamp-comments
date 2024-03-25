@@ -16,13 +16,13 @@ export const SelectedSecondsStateContext =
 export const SelectedSecondsDispatchContext = createContext<Dispatch<Msg>>(
   () => {
     // noop
-  }
+  },
 );
 
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <SelectedSecondsStateContext.Provider value={model}>

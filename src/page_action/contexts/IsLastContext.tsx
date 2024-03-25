@@ -19,7 +19,7 @@ export const IsLastDispatchContext = createContext<Dispatch<Msg>>(() => {
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <IsLastStateContext.Provider value={model}>

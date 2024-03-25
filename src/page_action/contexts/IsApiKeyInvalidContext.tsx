@@ -15,13 +15,13 @@ export const IsApiKeyInvalidStateContext = createContext(false);
 export const IsApiKeyInvalidDispatchContext = createContext<Dispatch<Msg>>(
   () => {
     // noop
-  }
+  },
 );
 
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <IsApiKeyInvalidStateContext.Provider value={model}>

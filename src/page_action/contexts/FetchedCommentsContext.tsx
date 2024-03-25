@@ -24,13 +24,13 @@ export const FetchedCommentsStateContext = createContext<FetchedComments>({
 export const FetchedCommentsDispatchContext = createContext<Dispatch<Msg>>(
   () => {
     // noop
-  }
+  },
 );
 
 export const view: View<Model, Msg, Props> = ({
   model,
   dispatch,
-  children,
+  props: { children },
 }) => {
   return (
     <FetchedCommentsStateContext.Provider value={model}>

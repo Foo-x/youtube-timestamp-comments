@@ -6,12 +6,12 @@ import '@fortawesome/fontawesome-free/js/solid';
 import 'bulma-divider/dist/css/bulma-divider.min.css';
 import 'bulma/css/bulma.min.css';
 import React, { useContext, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import {
   MemoryRouter as Router,
   Route,
-  Switch,
-  useHistory,
+  Routes,
+  useNavigate,
   useLocation,
 } from 'react-router-dom';
 import FetchedCommentsContextProvider, {
@@ -53,9 +53,9 @@ type Props = unknown;
 
 type HooksResult = unknown;
 
-const useHooks: UseHooks<Props, HooksResult> = ({ props }) => {
+const useHooks: UseHooks<Props, HooksResult> = () => {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const setTotalCount = useContext(TotalCountDispatchContext);
   const setFetchedComments = useContext(FetchedCommentsDispatchContext);
@@ -97,7 +97,7 @@ const useHooks: UseHooks<Props, HooksResult> = ({ props }) => {
           return;
         }
         setIsApiKeyInvalid(true);
-        history.push('/config');
+        navigate('/config');
       }
     });
 
@@ -129,48 +129,42 @@ const useHooks: UseHooks<Props, HooksResult> = ({ props }) => {
   }, [location.pathname, scroll]);
 };
 
-const view: View<Props, HooksResult> = ({ props, hooksResult }) => {
+const view: View<Props, HooksResult> = () => {
   return (
-    <>
-      <Route exact path='/'>
-        <MainPage />
-      </Route>
-      <Route exact path='/config'>
-        <ConfigPage />
-      </Route>
-    </>
+    <Routes>
+      <Route path='/' element={<MainPage />} />
+      <Route path='/config' element={<ConfigPage />} />
+    </Routes>
   );
 };
 
 const PageAction = Container({ useHooks, view });
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+root.render(
   <React.StrictMode>
     <Router>
-      <Switch>
-        <TotalCountContextProvider>
-          <FetchedCommentsContextProvider>
-            <IsLastContextProvider>
-              <IsProgressContextProvider>
-                <ScrollContextProvider>
-                  <SideMenuScrollContextProvider>
-                    <SideMenuRefContextProvider>
-                      <SelectedIdContextProvider>
-                        <SelectedSecondsContextProvider>
-                          <IsApiKeyInvalidContextProvider>
-                            <PageAction />
-                          </IsApiKeyInvalidContextProvider>
-                        </SelectedSecondsContextProvider>
-                      </SelectedIdContextProvider>
-                    </SideMenuRefContextProvider>
-                  </SideMenuScrollContextProvider>
-                </ScrollContextProvider>
-              </IsProgressContextProvider>
-            </IsLastContextProvider>
-          </FetchedCommentsContextProvider>
-        </TotalCountContextProvider>
-      </Switch>
+      <TotalCountContextProvider>
+        <FetchedCommentsContextProvider>
+          <IsLastContextProvider>
+            <IsProgressContextProvider>
+              <ScrollContextProvider>
+                <SideMenuScrollContextProvider>
+                  <SideMenuRefContextProvider>
+                    <SelectedIdContextProvider>
+                      <SelectedSecondsContextProvider>
+                        <IsApiKeyInvalidContextProvider>
+                          <PageAction />
+                        </IsApiKeyInvalidContextProvider>
+                      </SelectedSecondsContextProvider>
+                    </SelectedIdContextProvider>
+                  </SideMenuRefContextProvider>
+                </SideMenuScrollContextProvider>
+              </ScrollContextProvider>
+            </IsProgressContextProvider>
+          </IsLastContextProvider>
+        </FetchedCommentsContextProvider>
+      </TotalCountContextProvider>
     </Router>
   </React.StrictMode>,
-  document.getElementById('root')
 );
