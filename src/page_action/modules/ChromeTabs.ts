@@ -1,8 +1,10 @@
-const contentTabId = Number(new URLSearchParams(location.search).get('tabId'));
+const contentTabId = Number(
+  new URLSearchParams(window.location.search).get('tabId'),
+);
 
 export const sendMessage = (message: MsgToCS) => {
   return new Promise<void>((resolve) => {
-    chrome.tabs.sendMessage(contentTabId, message);
+    void chrome.tabs.sendMessage(contentTabId, message);
     resolve();
   });
 };

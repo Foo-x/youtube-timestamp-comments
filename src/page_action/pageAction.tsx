@@ -77,12 +77,10 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
       void sendMessage({ type: 'cache' });
     });
 
-    const title = new URLSearchParams(location.search).get('title');
+    const title = new URLSearchParams(window.location.search).get('title');
     if (title) {
       document.title = title;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
 

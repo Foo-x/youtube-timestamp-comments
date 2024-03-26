@@ -3,19 +3,18 @@ env:
   es2021: true
   node: true
 extends:
-  - react-app
   - react-app/jest
   - plugin:react/recommended
   - airbnb
   - plugin:import/errors
   - plugin:import/warnings
   - plugin:import/typescript
-  - plugin:@typescript-eslint/recommended
-  - plugin:@typescript-eslint/recommended-requiring-type-checking
+  - plugin:@typescript-eslint/recommended-type-checked
+  - plugin:@typescript-eslint/stylistic-type-checked
   - prettier
 parser: '@typescript-eslint/parser'
 parserOptions:
-  project: './tsconfig.json'
+  project: true
   ecmaFeatures:
     jsx: true
   ecmaVersion: latest
@@ -49,6 +48,15 @@ rules:
   '@typescript-eslint/no-explicit-any':
     - warn
     - ignoreRestArgs: true
+  '@typescript-eslint/no-unused-vars':
+    - error
+    - argsIgnorePattern: '^_'
+      caughtErrorsIgnorePattern: '^_'
+      destructuredArrayIgnorePattern: '^_'
+      varsIgnorePattern: '^_'
+  '@typescript-eslint/consistent-type-definitions':
+    - error
+    - 'type'
 settings:
   import/resolver:
     typescript: {}

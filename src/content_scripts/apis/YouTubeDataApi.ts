@@ -8,9 +8,9 @@ export type YouTubeURL = URL & { readonly _: unique symbol };
 
 type YouTubeCommentThreadsError = {
   error: {
-    errors: Array<{
+    errors: {
       reason: string;
-    }>;
+    }[];
   };
 };
 
@@ -19,7 +19,7 @@ type YouTubeCommentThreadsSuccess = {
   pageInfo: {
     totalResults: number;
   };
-  items: Array<{
+  items: {
     snippet: {
       topLevelComment: {
         snippet: {
@@ -27,13 +27,13 @@ type YouTubeCommentThreadsSuccess = {
         };
       };
     };
-  }>;
+  }[];
 };
 
 export const createUrl = (
   videoId: VideoId,
   key: ApiKey,
-  pageToken?: string
+  pageToken?: string,
 ): YouTubeURL => {
   const url = new URL('https://www.googleapis.com/youtube/v3/commentThreads');
   url.searchParams.append('part', 'snippet');
@@ -52,7 +52,7 @@ export const createUrl = (
 
 export const fetchNextPage = async (
   url: YouTubeURL,
-  currentCount: number
+  currentCount: number,
 ): Promise<PageResult | ErrorType> => {
   const res = await fetch(url.toString());
   if (!res.ok) {
@@ -73,7 +73,7 @@ export const fetchNextPage = async (
   const pageToken = resJson.nextPageToken;
   const totalCount = currentCount + resJson.pageInfo.totalResults;
   const comments = resJson.items.map(
-    (item) => item.snippet.topLevelComment.snippet.textOriginal
+    (item) => item.snippet.topLevelComment.snippet.textOriginal,
   );
 
   return { pageToken, totalCount, comments };

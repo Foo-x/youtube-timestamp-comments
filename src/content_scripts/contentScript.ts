@@ -37,7 +37,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
   // UPDATE
 
   const sendResponse = (responseMsg: MsgToPA) => {
-    chrome.runtime.sendMessage(responseMsg);
+    void chrome.runtime.sendMessage(responseMsg);
   };
 
   const sendPageResponse = (newModel: WithPageToken | LastPageLoaded) => {
@@ -82,7 +82,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
   const onFirstPage = async () => {
     const pageResult = await fetchNextPage(
       createUrl(model.videoId, (await getApiKey()) as ApiKey),
-      0
+      0,
     );
     if (pageResult === 'comments-disabled') {
       model = {
@@ -135,7 +135,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
 
       const pageResult = await fetchNextPage(
         createUrl(model.videoId, key, model.pageToken),
-        model.totalCount
+        model.totalCount,
       );
       if (typeof pageResult === 'string') {
         sendErrorResponse(pageResult);
@@ -175,7 +175,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     }
     if (msg.type === 'next-page') {
       onNextPage();
-      return;
     }
   };
 

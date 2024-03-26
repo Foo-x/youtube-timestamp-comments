@@ -16,9 +16,16 @@ type ViewProps = {
 };
 
 // message from page_action to content_scripts
-type CacheToCS = { type: 'cache' };
-type NextPageToCS = { type: 'next-page' };
-type SaveViewPropsToCS = { type: 'save-view-props'; data: ViewProps };
+type CacheToCS = {
+  type: 'cache';
+};
+type NextPageToCS = {
+  type: 'next-page';
+};
+type SaveViewPropsToCS = {
+  type: 'save-view-props';
+  data: ViewProps;
+};
 type MsgToCS = CacheToCS | NextPageToCS | SaveViewPropsToCS;
 
 // message from content_scripts to page_action
@@ -28,6 +35,12 @@ type PageToPA = {
   totalCount: number;
   isLast: boolean;
 };
-type ViewPropsToPA = { type: 'view-props'; data: ViewProps };
-type ErrorToPA = { type: 'error'; data: ErrorType };
+type ViewPropsToPA = {
+  type: 'view-props';
+  data: ViewProps;
+};
+type ErrorToPA = {
+  type: 'error';
+  data: ErrorType;
+};
 type MsgToPA = PageToPA | ViewPropsToPA | ErrorToPA;

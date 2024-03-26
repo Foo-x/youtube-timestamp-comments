@@ -1,12 +1,6 @@
 import { Container, UseHooks, View } from '@foo-x/react-container';
 import { sendMessage } from 'pa/modules/ChromeTabs';
-import {
-  memo,
-  ReactElement,
-  useCallback,
-  useContext,
-  useMemo,
-} from 'react';
+import { memo, ReactElement, useCallback, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { IsLastStateContext } from 'src/page_action/contexts/IsLastContext';
 import {
@@ -39,7 +33,7 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
       ) : (
         <div className='progress-stopped' />
       ),
-    [isProgress]
+    [isProgress],
   );
 
   const fetchNextPage = useCallback(() => {
@@ -56,12 +50,7 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
 };
 
 export const view: View<Props, HooksResult> = ({
-  hooksResult: {
-    totalCount,
-    isLast,
-    progress,
-    fetchNextPage,
-  },
+  hooksResult: { totalCount, isLast, progress, fetchNextPage },
 }) => {
   return (
     <header className='header'>
@@ -85,15 +74,13 @@ export const view: View<Props, HooksResult> = ({
                   fetchNextPage();
                 }
               }}
+              aria-label='Fetch next'
             >
               <span className='icon'>
                 <i className='fas fa-angle-right fa-lg' />
               </span>
             </a>
-            <Link
-              to='/config'
-              className='navbar-item'
-            >
+            <Link to='/config' className='navbar-item'>
               <span className='icon'>
                 <i className='fas fa-cog fa-sm' />
               </span>

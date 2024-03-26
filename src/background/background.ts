@@ -26,7 +26,7 @@ chrome.windows.onRemoved.addListener((wid) => {
 });
 chrome.action.onClicked.addListener(async (tab) => {
   if (windowId) {
-    chrome.windows.remove(windowId);
+    await chrome.windows.remove(windowId);
   }
   const parentWindow = await chrome.windows.getCurrent();
   const extensionWindow = await chrome.windows.create({
@@ -35,7 +35,7 @@ chrome.action.onClicked.addListener(async (tab) => {
         tabId: tab.id!.toString(),
         title: tab.title!,
       },
-    )}`,
+    ).toString()}`,
     type: 'popup',
     width: 350,
     height: 650,

@@ -23,7 +23,7 @@ type HooksResult = {
 };
 
 const uniqueIndices = (
-  fetchedComments: FetchedComments
+  fetchedComments: FetchedComments,
 ): [number, number][] => {
   const indexSet = new Set<number>();
   const result: [number, number][] = [];
@@ -79,7 +79,7 @@ const replaceTimeLink = (comment: string): ReactNode => {
   currentMatch = timestampPattern.exec(comment);
   while (currentMatch !== null) {
     resultArray.push(
-      replaceNewline(comment.slice(lastIndex, currentMatch.index))
+      replaceNewline(comment.slice(lastIndex, currentMatch.index)),
     );
     const timestamp = currentMatch[0];
     const seconds = timestampToSeconds(timestamp);
@@ -97,7 +97,7 @@ const replaceTimeLink = (comment: string): ReactNode => {
         data-value={seconds}
       >
         {timestamp}
-      </a>
+      </a>,
     );
     lastIndex = timestampPattern.lastIndex;
     currentMatch = timestampPattern.exec(comment);
@@ -158,16 +158,15 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
       return;
     }
     const timestampElement = document.querySelector(
-      `[data-value="${selectedSeconds}"]`
+      `[data-value="${selectedSeconds}"]`,
     );
     if (timestampElement) {
       window.scrollBy(
         0,
         timestampElement.getBoundingClientRect().top -
-          (document.querySelector('.header')?.scrollHeight ?? 0)
+          (document.querySelector('.header')?.scrollHeight ?? 0),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
   const content = useMemo(() => {
@@ -177,8 +176,8 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
             uniqueIndices(fetchedComments).map(([sec, index]) => [
               sec,
               fetchedComments.comments[index],
-            ])
-          ).entries()
+            ]),
+          ).entries(),
         ).map(([sec, comments]) => s2cToCommentCards(sec, comments))
       : s2cToCommentCards(
           fetchedComments.secondCommentIndexPairs[selectedId][0],
@@ -186,7 +185,7 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
             fetchedComments.comments[
               fetchedComments.secondCommentIndexPairs[selectedId][1]
             ],
-          ]
+          ],
         );
   }, [fetchedComments, selectedId]);
 

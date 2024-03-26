@@ -15,8 +15,8 @@ const extractTimestampSeconds = (comment: string): number[] => {
             ? [0, parseInt(first, 10), parseInt(second, 10)]
             : [parseInt(first, 10), parseInt(second, 10), parseInt(third, 10)];
         return h * 3600 + m * 60 + s;
-      })
-    )
+      }),
+    ),
   );
 };
 
@@ -24,7 +24,7 @@ export const createFetchedComments = (comments: string[]): FetchedComments => {
   const commentSecondsPairs = comments
     .map(
       (comment) =>
-        [comment, extractTimestampSeconds(comment)] as [string, number[]]
+        [comment, extractTimestampSeconds(comment)] as [string, number[]],
     )
     .filter(([_, seconds]) => seconds.length > 0);
   const secondCommentIndexPairs = commentSecondsPairs
