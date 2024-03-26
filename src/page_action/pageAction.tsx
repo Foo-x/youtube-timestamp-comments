@@ -12,7 +12,6 @@ import {
   Route,
   Routes,
   useNavigate,
-  useLocation,
 } from 'react-router-dom';
 import FetchedCommentsContextProvider, {
   FetchedCommentsDispatchContext,
@@ -26,22 +25,8 @@ import IsLastContextProvider, {
 import IsProgressContextProvider, {
   IsProgressDispatchContext,
 } from './contexts/IsProgressContext';
-import ScrollContextProvider, {
-  ScrollDispatchContext,
-  ScrollStateContext,
-} from './contexts/ScrollContext';
-import SelectedIdContextProvider, {
-  SelectedIdDispatchContext,
-  SelectedIdStateContext,
-} from './contexts/SelectedIdContext';
+import SelectedIdContextProvider from './contexts/SelectedIdContext';
 import SelectedSecondsContextProvider from './contexts/SelectedSecondsContext';
-import SideMenuRefContextProvider, {
-  SideMenuRefStateContext,
-} from './contexts/SideMenuRefContext';
-import SideMenuScrollContextProvider, {
-  SideMenuScrollDispatchContext,
-  SideMenuScrollStateContext,
-} from './contexts/SideMenuScrollContext';
 import TotalCountContextProvider, {
   TotalCountDispatchContext,
 } from './contexts/TotalCountContext';
@@ -54,20 +39,12 @@ type Props = unknown;
 type HooksResult = unknown;
 
 const useHooks: UseHooks<Props, HooksResult> = () => {
-  const location = useLocation();
   const navigate = useNavigate();
 
   const setTotalCount = useContext(TotalCountDispatchContext);
   const setFetchedComments = useContext(FetchedCommentsDispatchContext);
   const setIsLast = useContext(IsLastDispatchContext);
   const setIsProgress = useContext(IsProgressDispatchContext);
-  const scroll = useContext(ScrollStateContext);
-  const setScroll = useContext(ScrollDispatchContext);
-  const sideMenuScroll = useContext(SideMenuScrollStateContext);
-  const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
-  const sideMenuRef = useContext(SideMenuRefStateContext);
-  const selectedId = useContext(SelectedIdStateContext);
-  const setSelectedId = useContext(SelectedIdDispatchContext);
   const setIsApiKeyInvalid = useContext(IsApiKeyInvalidDispatchContext);
 
   useEffect(() => {
@@ -77,12 +54,6 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
         setFetchedComments(msg.data);
         setIsLast(msg.isLast);
         setIsProgress(false);
-        return;
-      }
-      if (msg.type === 'view-props') {
-        setScroll(msg.data.scroll);
-        setSideMenuScroll(msg.data.sideMenuScroll);
-        setSelectedId(msg.data.selectedId);
         return;
       }
       if (msg.type === 'error') {
@@ -105,28 +76,14 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
     void initContentScript().then(() => {
       void sendMessage({ type: 'cache' });
     });
+
+    const title = new URLSearchParams(location.search).get('title');
+    if (title) {
+      document.title = title;
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useEffect(() => {
-    window.onblur = () => {
-      void sendMessage({
-        type: 'save-view-props',
-        data: {
-          scroll: location.pathname === '/' ? window.scrollY : scroll,
-          sideMenuScroll:
-            location.pathname === '/'
-              ? sideMenuRef.current?.scrollTop ?? sideMenuScroll
-              : sideMenuScroll,
-          selectedId,
-        },
-      });
-    };
-  }, [location.pathname, scroll, sideMenuScroll, selectedId, sideMenuRef]);
-  useEffect(() => {
-    if (location.pathname === '/') {
-      window.scroll(0, scroll);
-    }
-  }, [location.pathname, scroll]);
 };
 
 const view: View<Props, HooksResult> = () => {
@@ -148,19 +105,13 @@ root.render(
         <FetchedCommentsContextProvider>
           <IsLastContextProvider>
             <IsProgressContextProvider>
-              <ScrollContextProvider>
-                <SideMenuScrollContextProvider>
-                  <SideMenuRefContextProvider>
-                    <SelectedIdContextProvider>
-                      <SelectedSecondsContextProvider>
-                        <IsApiKeyInvalidContextProvider>
-                          <PageAction />
-                        </IsApiKeyInvalidContextProvider>
-                      </SelectedSecondsContextProvider>
-                    </SelectedIdContextProvider>
-                  </SideMenuRefContextProvider>
-                </SideMenuScrollContextProvider>
-              </ScrollContextProvider>
+              <SelectedSecondsContextProvider>
+                <SelectedIdContextProvider>
+                  <IsApiKeyInvalidContextProvider>
+                    <PageAction />
+                  </IsApiKeyInvalidContextProvider>
+                </SelectedIdContextProvider>
+              </SelectedSecondsContextProvider>
             </IsProgressContextProvider>
           </IsLastContextProvider>
         </FetchedCommentsContextProvider>

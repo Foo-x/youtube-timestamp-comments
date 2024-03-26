@@ -58,14 +58,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     }
   };
 
-  const sendViewPropsResponseIfExists = (
-    newModel: WithPageToken | LastPageLoaded
-  ) => {
-    if (newModel.viewProps !== undefined) {
-      sendResponse({ type: 'view-props', data: newModel.viewProps });
-    }
-  };
-
   const sendErrorResponse = (errorType: ErrorType) => {
     sendResponse({ type: 'error', data: errorType });
   };
@@ -85,7 +77,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       return;
     }
     sendPageResponse(model);
-    sendViewPropsResponseIfExists(model);
   };
 
   const onFirstPage = async () => {
@@ -185,12 +176,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     if (msg.type === 'next-page') {
       onNextPage();
       return;
-    }
-    if (
-      msg.type === 'save-view-props' &&
-      (model.state === 'with-page-token' || model.state === 'last-page-loaded')
-    ) {
-      model.viewProps = msg.data;
     }
   };
 

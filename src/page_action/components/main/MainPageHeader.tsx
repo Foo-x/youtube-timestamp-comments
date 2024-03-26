@@ -3,7 +3,6 @@ import { sendMessage } from 'pa/modules/ChromeTabs';
 import {
   memo,
   ReactElement,
-  RefObject,
   useCallback,
   useContext,
   useMemo,
@@ -14,12 +13,6 @@ import {
   IsProgressDispatchContext,
   IsProgressStateContext,
 } from 'src/page_action/contexts/IsProgressContext';
-import { ScrollDispatchContext } from 'src/page_action/contexts/ScrollContext';
-import { SideMenuRefStateContext } from 'src/page_action/contexts/SideMenuRefContext';
-import {
-  SideMenuScrollDispatchContext,
-  SideMenuScrollStateContext,
-} from 'src/page_action/contexts/SideMenuScrollContext';
 import { TotalCountStateContext } from 'src/page_action/contexts/TotalCountContext';
 
 type Props = unknown;
@@ -27,10 +20,6 @@ type Props = unknown;
 type HooksResult = {
   totalCount: number;
   isLast: boolean;
-  setScroll: (v: number) => void;
-  sideMenuScroll: number;
-  setSideMenuScroll: (v: number) => void;
-  sideMenuRef: RefObject<HTMLUListElement>;
   progress: ReactElement;
   fetchNextPage: () => void;
 };
@@ -40,10 +29,6 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
   const isLast = useContext(IsLastStateContext);
   const isProgress = useContext(IsProgressStateContext);
   const setIsProgress = useContext(IsProgressDispatchContext);
-  const setScroll = useContext(ScrollDispatchContext);
-  const sideMenuScroll = useContext(SideMenuScrollStateContext);
-  const setSideMenuScroll = useContext(SideMenuScrollDispatchContext);
-  const sideMenuRef = useContext(SideMenuRefStateContext);
 
   const progress = useMemo(
     () =>
@@ -65,10 +50,6 @@ export const useHooks: UseHooks<Props, HooksResult> = () => {
   return {
     totalCount,
     isLast,
-    setScroll,
-    sideMenuScroll,
-    setSideMenuScroll,
-    sideMenuRef,
     progress,
     fetchNextPage,
   };
@@ -78,10 +59,6 @@ export const view: View<Props, HooksResult> = ({
   hooksResult: {
     totalCount,
     isLast,
-    setScroll,
-    sideMenuScroll,
-    setSideMenuScroll,
-    sideMenuRef,
     progress,
     fetchNextPage,
   },
@@ -116,12 +93,6 @@ export const view: View<Props, HooksResult> = ({
             <Link
               to='/config'
               className='navbar-item'
-              onClick={() => {
-                setScroll(window.scrollY);
-                setSideMenuScroll(
-                  sideMenuRef.current?.scrollTop ?? sideMenuScroll
-                );
-              }}
             >
               <span className='icon'>
                 <i className='fas fa-cog fa-sm' />
