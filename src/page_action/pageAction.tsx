@@ -30,13 +30,19 @@ import SelectedSecondsContextProvider from './contexts/SelectedSecondsContext';
 import TotalCountContextProvider, {
   TotalCountDispatchContext,
 } from './contexts/TotalCountContext';
-import { initContentScript, sendMessage } from './modules/ChromeTabs';
+import {
+  contentTabId,
+  initContentScript,
+  sendMessage,
+} from './modules/ChromeTabs';
 import ConfigPage from './pages/config';
 import MainPage from './pages/main';
 
 type Props = unknown;
 
 type HooksResult = unknown;
+
+const healthCheckInterval = 1000;
 
 const useHooks: UseHooks<Props, HooksResult> = () => {
   const navigate = useNavigate();
@@ -49,14 +55,14 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
-      if (msg.type === 'page') {
+      if (msg.type === 'page' && msg.tabId === contentTabId) {
         setTotalCount(msg.totalCount);
         setFetchedComments(msg.data);
         setIsLast(msg.isLast);
         setIsProgress(false);
         return;
       }
-      if (msg.type === 'error') {
+      if (msg.type === 'error' && msg.tabId === contentTabId) {
         setIsProgress(false);
         if (msg.data === 'comments-disabled') {
           setTotalCount(0);
@@ -81,6 +87,30 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
     if (title) {
       document.title = title;
     }
+
+    let videoId: VideoId;
+    const healthCheck = () => {
+      void sendMessage<HealthCheckToPA>({ type: 'health-check' })
+        .then((result) => {
+          if (result.tabId !== contentTabId) {
+            return;
+          }
+          if (!videoId) {
+            videoId = result.videoId;
+            setTimeout(healthCheck, healthCheckInterval);
+            return;
+          }
+          if (result.videoId !== videoId) {
+            window.close();
+            return;
+          }
+          setTimeout(healthCheck, healthCheckInterval);
+        })
+        .catch(() => {
+          window.close();
+        });
+    };
+    healthCheck();
   }, []);
 };
 

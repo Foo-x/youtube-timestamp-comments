@@ -18,21 +18,29 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-let windowId: number | undefined;
-chrome.windows.onRemoved.addListener((wid) => {
-  if (wid === windowId) {
-    windowId = undefined;
+const tabIdToWindowId = new Map<number, number>();
+const windowIdToTabId = new Map<number, number>();
+chrome.windows.onRemoved.addListener((windowId) => {
+  const tabId = windowIdToTabId.get(windowId);
+  if (tabId != null) {
+    windowIdToTabId.delete(windowId);
+    tabIdToWindowId.delete(tabId);
   }
 });
 chrome.action.onClicked.addListener(async (tab) => {
+  const tabId = tab.id!;
+  const windowId = tabIdToWindowId.get(tabId);
   if (windowId) {
-    await chrome.windows.remove(windowId);
+    await chrome.windows.update(windowId, {
+      focused: true,
+    });
+    return;
   }
   const parentWindow = await chrome.windows.getCurrent();
   const extensionWindow = await chrome.windows.create({
     url: `${chrome.runtime.getURL('/html/page_action/page_action.html')}?${new URLSearchParams(
       {
-        tabId: tab.id!.toString(),
+        tabId: tabId.toString(),
         title: tab.title!,
       },
     ).toString()}`,
@@ -44,7 +52,9 @@ chrome.action.onClicked.addListener(async (tab) => {
         ? parentWindow.left + parentWindow.width - 350
         : undefined,
   });
-  windowId = extensionWindow.id;
+  const newWindowId = extensionWindow.id!;
+  tabIdToWindowId.set(tabId, newWindowId);
+  windowIdToTabId.set(newWindowId, tabId);
 });
 
 export {};

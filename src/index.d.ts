@@ -8,39 +8,35 @@ type Second2Comments = Map<number, string[]>;
 type SelectedSeconds = 'ALL' | number;
 type SelectedId = 'ALL' | number;
 type ErrorType = 'invalid-api-key' | 'comments-disabled' | 'unknown';
-
-type ViewProps = {
-  scroll: number;
-  sideMenuScroll: number;
-  selectedId: SelectedId;
+type WithTabId<T> = T & {
+  tabId: number;
 };
 
 // message from page_action to content_scripts
-type CacheToCS = {
+type CacheToCS = WithTabId<{
   type: 'cache';
-};
-type NextPageToCS = {
+}>;
+type NextPageToCS = WithTabId<{
   type: 'next-page';
-};
-type SaveViewPropsToCS = {
-  type: 'save-view-props';
-  data: ViewProps;
-};
-type MsgToCS = CacheToCS | NextPageToCS | SaveViewPropsToCS;
+}>;
+type HealthCheckToCS = WithTabId<{
+  type: 'health-check';
+}>;
+type MsgToCS = CacheToCS | NextPageToCS | HealthCheckToCS;
 
 // message from content_scripts to page_action
-type PageToPA = {
+type PageToPA = WithTabId<{
   type: 'page';
   data: FetchedComments;
   totalCount: number;
   isLast: boolean;
-};
-type ViewPropsToPA = {
-  type: 'view-props';
-  data: ViewProps;
-};
-type ErrorToPA = {
+}>;
+type ErrorToPA = WithTabId<{
   type: 'error';
   data: ErrorType;
-};
-type MsgToPA = PageToPA | ViewPropsToPA | ErrorToPA;
+}>;
+type HealthCheckToPA = WithTabId<{
+  type: 'health-check';
+  videoId: VideoId;
+}>;
+type MsgToPA = PageToPA | ErrorToPA | HealthCheckToPA;

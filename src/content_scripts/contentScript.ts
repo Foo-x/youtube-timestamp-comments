@@ -18,7 +18,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     state: 'last-page-loaded';
     fetchedSeconds: FetchedComments;
     totalCount: number;
-    viewProps?: ViewProps;
   };
   type WithPageToken = Omit<LastPageLoaded, 'state'> & {
     state: 'with-page-token';
@@ -40,13 +39,17 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     void chrome.runtime.sendMessage(responseMsg);
   };
 
-  const sendPageResponse = (newModel: WithPageToken | LastPageLoaded) => {
+  const sendPageResponse = (
+    newModel: WithPageToken | LastPageLoaded,
+    tabId: number,
+  ) => {
     if (newModel.state === 'with-page-token') {
       sendResponse({
         type: 'page',
         data: newModel.fetchedSeconds,
         totalCount: newModel.totalCount,
         isLast: false,
+        tabId,
       });
     } else {
       sendResponse({
@@ -54,32 +57,33 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         data: newModel.fetchedSeconds,
         totalCount: newModel.totalCount,
         isLast: true,
+        tabId,
       });
     }
   };
 
-  const sendErrorResponse = (errorType: ErrorType) => {
-    sendResponse({ type: 'error', data: errorType });
+  const sendErrorResponse = (errorType: ErrorType, tabId: number) => {
+    sendResponse({ type: 'error', data: errorType, tabId });
   };
 
-  const onCache = async () => {
+  const onCache = async (tabId: number) => {
     const newModel = init();
     if (model.videoId !== newModel.videoId) {
       model = newModel;
     }
     if (model.state === 'with-video-id' && !(await getApiKey())) {
-      sendErrorResponse('invalid-api-key');
+      sendErrorResponse('invalid-api-key', tabId);
       return;
     }
     if (model.state === 'with-video-id') {
       // eslint-disable-next-line no-use-before-define
-      update({ type: 'next-page' });
+      update({ type: 'next-page', tabId });
       return;
     }
-    sendPageResponse(model);
+    sendPageResponse(model, tabId);
   };
 
-  const onFirstPage = async () => {
+  const onFirstPage = async (tabId: number) => {
     const pageResult = await fetchNextPage(
       createUrl(model.videoId, (await getApiKey()) as ApiKey),
       0,
@@ -94,7 +98,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       };
     }
     if (typeof pageResult === 'string') {
-      sendErrorResponse(pageResult);
+      sendErrorResponse(pageResult, tabId);
       return;
     }
     const fetchedSeconds = createFetchedComments(pageResult.comments);
@@ -114,22 +118,22 @@ if (!chrome.runtime.onMessage.hasListeners()) {
           totalCount: pageResult.totalCount,
           lock: model.lock,
         };
-    sendPageResponse(model);
+    sendPageResponse(model, tabId);
   };
 
-  const onNextPage = () => {
+  const onNextPage = (tabId: number) => {
     void model.lock.acquire('key', async () => {
       if (model.state === 'last-page-loaded') {
-        sendPageResponse(model);
+        sendPageResponse(model, tabId);
         return;
       }
       const key = (await getApiKey()) as ApiKey | undefined;
       if (!key) {
-        sendErrorResponse('invalid-api-key');
+        sendErrorResponse('invalid-api-key', tabId);
         return;
       }
       if (model.state === 'with-video-id') {
-        void onFirstPage();
+        void onFirstPage(tabId);
         return;
       }
 
@@ -138,14 +142,13 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         model.totalCount,
       );
       if (typeof pageResult === 'string') {
-        sendErrorResponse(pageResult);
+        sendErrorResponse(pageResult, tabId);
         return;
       }
       const fetchedSeconds = createFetchedComments([
         ...model.fetchedSeconds.comments,
         ...pageResult.comments,
       ]);
-      const { viewProps } = model;
       model = pageResult.pageToken
         ? {
             state: 'with-page-token',
@@ -153,7 +156,6 @@ if (!chrome.runtime.onMessage.hasListeners()) {
             fetchedSeconds,
             totalCount: pageResult.totalCount,
             pageToken: pageResult.pageToken,
-            viewProps,
             lock: model.lock,
           }
         : {
@@ -161,24 +163,45 @@ if (!chrome.runtime.onMessage.hasListeners()) {
             videoId: model.videoId,
             fetchedSeconds,
             totalCount: pageResult.totalCount,
-            viewProps,
             lock: model.lock,
           };
-      sendPageResponse(model);
+      sendPageResponse(model, tabId);
     });
   };
 
-  const update = (msg: MsgToCS) => {
+  const onHealthCheck = (
+    sendResult: (result: MsgToPA) => void,
+    tabId: number,
+  ) => {
+    sendResult({
+      type: 'health-check',
+      videoId: (new URLSearchParams(document.location.search).get('v') ??
+        '') as VideoId,
+      tabId,
+    });
+  };
+
+  const update = (
+    msg: MsgToCS,
+    sendResult: (result: MsgToPA) => void = () => {
+      // Nop
+    },
+  ) => {
     if (msg.type === 'cache') {
-      void onCache();
+      void onCache(msg.tabId);
       return;
     }
     if (msg.type === 'next-page') {
-      onNextPage();
+      onNextPage(msg.tabId);
+      return;
+    }
+    if (msg.type === 'health-check') {
+      void onHealthCheck(sendResult, msg.tabId);
     }
   };
 
-  chrome.runtime.onMessage.addListener((message: MsgToCS) => {
-    update(message);
+  chrome.runtime.onMessage.addListener((message: MsgToCS, _, sendResult) => {
+    update(message, sendResult);
+    return true;
   });
 }
