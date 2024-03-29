@@ -107,7 +107,11 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
           setTimeout(healthCheck, healthCheckInterval);
         })
         .catch(() => {
-          window.close();
+          if (videoId) {
+            window.close();
+          } else {
+            setTimeout(healthCheck, healthCheckInterval);
+          }
         });
     };
     healthCheck();
