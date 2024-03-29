@@ -47,6 +47,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     type: 'popup',
     width: 350,
     height: 650,
+    top: parentWindow.top,
     left:
       parentWindow.left && parentWindow.width
         ? parentWindow.left + parentWindow.width - 350
