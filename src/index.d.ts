@@ -11,6 +11,7 @@ type ErrorType = 'invalid-api-key' | 'comments-disabled' | 'unknown';
 type WithTabId<T> = T & {
   tabId: number;
 };
+type Theme = 'device' | 'light' | 'dark';
 
 // message from page_action to content_scripts
 type CacheToCS = WithTabId<{

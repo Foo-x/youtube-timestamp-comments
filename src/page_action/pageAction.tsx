@@ -13,6 +13,7 @@ import {
   Routes,
   useNavigate,
 } from 'react-router-dom';
+import { getTheme } from 'src/modules/ChromeStorage';
 import FetchedCommentsContextProvider, {
   FetchedCommentsDispatchContext,
 } from './contexts/FetchedCommentsContext';
@@ -37,6 +38,7 @@ import {
 } from './modules/ChromeTabs';
 import ConfigPage from './pages/config';
 import MainPage from './pages/main';
+import { updateTheme } from './entities/Theme';
 
 type Props = unknown;
 
@@ -87,6 +89,8 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
     if (title) {
       document.title = title;
     }
+
+    void getTheme().then(updateTheme);
 
     let videoId: VideoId;
     const healthCheck = () => {

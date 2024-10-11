@@ -1,14 +1,32 @@
-import { Cmd, Init, Sub, Tea, Update, UseHooks, View } from '@foo-x/react-tea';
+import {
+  Cmd,
+  Init,
+  Sub,
+  Tea,
+  Update,
+  UseHooks,
+  View,
+  exhaustiveCheck,
+} from '@foo-x/react-tea';
 import { useContext } from 'react';
-import { getApiKey, setApiKey } from 'src/modules/ChromeStorage';
+import {
+  getApiKey,
+  getTheme,
+  setApiKey,
+  setTheme,
+} from 'src/modules/ChromeStorage';
 import {
   IsApiKeyInvalidDispatchContext,
   IsApiKeyInvalidStateContext,
 } from 'src/page_action/contexts/IsApiKeyInvalidContext';
+import { updateTheme } from 'src/page_action/entities/Theme';
 
-type Model = string;
+type Model = { key: string; theme: Theme };
 
-type Msg = Model;
+type Msg =
+  | { type: 'update-all'; key: string; theme: Theme }
+  | { type: 'update-key'; key: string }
+  | { type: 'update-theme'; theme: Theme };
 
 type Props = unknown;
 
@@ -18,15 +36,35 @@ type HooksResult = {
 };
 
 export const init: Init<Model, Msg, Props> = () => [
-  '',
+  { key: '', theme: 'device' },
   Cmd.promise(async (dispatch) => {
-    dispatch((await getApiKey()) ?? '');
+    dispatch({
+      type: 'update-all',
+      key: (await getApiKey()) ?? '',
+      theme: (await getTheme()) ?? 'device',
+    });
   }),
 ];
 
-export const update: Update<Model, Msg, Props> = ({ msg }) => {
-  setApiKey(msg);
-  return [msg, Cmd.none()];
+export const update: Update<Model, Msg, Props> = ({ model, msg }) => {
+  switch (msg.type) {
+    case 'update-all':
+      setApiKey(msg.key);
+      setTheme(msg.theme);
+      return [{ ...model, key: msg.key, theme: msg.theme }, Cmd.none()];
+
+    case 'update-key':
+      setApiKey(msg.key);
+      return [{ ...model, key: msg.key }, Cmd.none()];
+
+    case 'update-theme':
+      setTheme(msg.theme);
+      updateTheme(msg.theme);
+      return [{ ...model, theme: msg.theme }, Cmd.none()];
+
+    default:
+      return exhaustiveCheck(msg);
+  }
 };
 export const subscriptions: Sub<Model, Msg, Props> = Sub.none();
 
@@ -38,7 +76,7 @@ export const useHooks: UseHooks<Model, Msg, Props, HooksResult> = () => {
 };
 
 export const view: View<Model, Msg, Props, HooksResult> = ({
-  model: key,
+  model: { key, theme },
   dispatch,
   hooksResult: { isApiKeyInvalid, setIsApiKeyInvalid },
 }) => {
@@ -64,7 +102,10 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
               onFocus={(event) => event.currentTarget.select()}
               onInput={(event) => {
                 setIsApiKeyInvalid(false);
-                dispatch(event.currentTarget.value);
+                dispatch({
+                  type: 'update-key',
+                  key: event.currentTarget.value,
+                });
               }}
             />
           </div>
@@ -89,6 +130,28 @@ export const view: View<Model, Msg, Props, HooksResult> = ({
             </a>
           </li>
         </ul>
+      </section>
+      <section className='section'>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className='label' htmlFor='theme-select'>
+          Theme
+        </label>
+        <div className='select'>
+          <select
+            id='theme-select'
+            onChange={(event) =>
+              dispatch({
+                type: 'update-theme',
+                theme: event.currentTarget.value as Theme,
+              })
+            }
+            value={theme}
+          >
+            <option value='device'>Device theme</option>
+            <option value='light'>Light theme</option>
+            <option value='dark'>Dark theme</option>
+          </select>
+        </div>
       </section>
     </main>
   );
