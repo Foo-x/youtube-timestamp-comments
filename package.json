@@ -34,7 +34,7 @@
     "@foo-x/react-tea": "^0.2.1",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "async-lock": "^1.4.1",
-    "bulma": "^0.9.3",
+    "bulma": "^1.0.2",
     "bulma-divider": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

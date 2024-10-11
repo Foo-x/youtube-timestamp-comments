@@ -2,6 +2,15 @@
   height: 600px;
 }
 
+.card {
+  margin-bottom: initial !important;
+  border-radius: initial;
+}
+
+.card-header {
+  border-radius: initial !important;
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -53,11 +62,14 @@
   overflow-y: scroll;
   width: 33.33333%;
   height: calc(100% - 42px);
-  border-right: 1px solid hsl(0, 0%, 90%);
 }
 
 .side-menu-list::-webkit-scrollbar {
   display: none;
+}
+
+.side-menu-list a[role=button] {
+  border-radius: initial;
 }
 
 .main-container {

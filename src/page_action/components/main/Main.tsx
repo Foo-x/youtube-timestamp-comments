@@ -115,7 +115,7 @@ const replaceTimeLink = (comment: string): ReactNode => {
 const s2cToCommentCards = (sec: number, comments: string[]): JSX.Element => {
   return (
     <div className='card' key={`${sec}-${comments[0]}`}>
-      <header className='card-header has-background-light'>
+      <header className='card-header has-background'>
         <p className='card-header-title'>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a
