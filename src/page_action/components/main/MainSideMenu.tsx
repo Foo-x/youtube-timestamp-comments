@@ -41,7 +41,7 @@ export const view: View<Props, HooksResult> = ({
   },
 }) => {
   return (
-    <aside className='menu column is-4'>
+    <aside className='menu column is-4 main-side-menu'>
       <ul id='side-menu-list' className='menu-list side-menu-list'>
         <li>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}

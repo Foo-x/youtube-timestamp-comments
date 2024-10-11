@@ -56,6 +56,10 @@
   background-color: rgba(65, 65, 65, 0.1);
 }
 
+.main-side-menu {
+  max-width: 6rem;
+}
+
 .side-menu-list {
   position: fixed;
   top: 42px;
@@ -68,7 +72,7 @@
   display: none;
 }
 
-.side-menu-list a[role=button] {
+.side-menu-list a[role='button'] {
   border-radius: initial;
 }
 

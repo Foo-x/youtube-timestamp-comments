@@ -198,7 +198,7 @@ export const view: View<Props, HooksResult> = ({
   return (
     <main className='columns is-mobile is-gapless main-container' role='main'>
       <MainSideMenu />
-      <section className='column is-8'>{content}</section>
+      <section className='column'>{content}</section>
     </main>
   );
 };
