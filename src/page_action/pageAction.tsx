@@ -56,6 +56,7 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
   const setIsApiKeyInvalid = useContext(IsApiKeyInvalidDispatchContext);
 
   useEffect(() => {
+    // centralize handling of received values using `onMessage`, unlike message sending
     chrome.runtime.onMessage.addListener((msg: MsgToPA) => {
       if (msg.type === 'page' && msg.tabId === contentTabId) {
         setTotalCount(msg.totalCount);
@@ -110,6 +111,7 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
           }
           setTimeout(healthCheck, healthCheckInterval);
         })
+        // YouTube tab is closed before the page action window is closed
         .catch(() => {
           if (videoId) {
             window.close();

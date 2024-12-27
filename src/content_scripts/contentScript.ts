@@ -187,6 +187,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       // Nop
     },
   ) => {
+    // use `sendMessage` to handle with `onMessage` on the page action
     if (msg.type === 'cache') {
       void onCache(msg.tabId);
       return;
@@ -195,6 +196,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       onNextPage(msg.tabId);
       return;
     }
+    // use `sendResult` to handle with `then/catch` on the page action
     if (msg.type === 'health-check') {
       void onHealthCheck(sendResult, msg.tabId);
     }
