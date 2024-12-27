@@ -51,6 +51,13 @@ html {
 .main-container {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-comments-container {
+  flex: 1;
+  overflow-y: auto;
 }
 
 /* side menu */

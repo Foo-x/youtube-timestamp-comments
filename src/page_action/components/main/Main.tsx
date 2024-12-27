@@ -2,9 +2,9 @@ import { Container, UseHooks, View } from '@foo-x/react-container';
 import { secToTimeStr } from 'pa/entities/Time';
 import { updateTime } from 'pa/modules/ChromeTabs';
 import {
-  memo,
   ReactElement,
   ReactNode,
+  memo,
   useContext,
   useEffect,
   useMemo,
@@ -13,6 +13,7 @@ import { FetchedCommentsStateContext } from 'src/page_action/contexts/FetchedCom
 import { SelectedIdStateContext } from 'src/page_action/contexts/SelectedIdContext';
 import { SelectedSecondsStateContext } from 'src/page_action/contexts/SelectedSecondsContext';
 import MainSideMenu from './MainSideMenu';
+import SequenceBar from './SequenceBar';
 
 const timestampPattern = /(?:\d{1,2}:)?\d{1,2}:\d{2}/g;
 
@@ -196,9 +197,14 @@ export const view: View<Props, HooksResult> = ({
   hooksResult: { content },
 }) => {
   return (
-    <main className='columns is-mobile is-gapless main-container' role='main'>
-      <MainSideMenu />
-      <section className='column comments'>{content}</section>
+    <main className='main-container' role='main'>
+      <div>
+        <SequenceBar />
+      </div>
+      <div className='columns is-mobile is-gapless main-comments-container'>
+        <MainSideMenu />
+        <section className='column comments'>{content}</section>
+      </div>
     </main>
   );
 };
