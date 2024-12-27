@@ -33,10 +33,14 @@ if (!chrome.runtime.onMessage.hasListeners()) {
   });
   let model: Model = init();
 
+  const timeupdateListeners = new Map<number, () => void>();
+
   // UPDATE
 
   const sendResponse = (responseMsg: MsgToPA) => {
-    void chrome.runtime.sendMessage(responseMsg);
+    chrome.runtime.sendMessage(responseMsg).catch(() => {
+      // do nothing
+    });
   };
 
   const sendPageResponse = (
@@ -66,11 +70,43 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     sendResponse({ type: 'error', data: errorType, tabId });
   };
 
+  const registerTimeupdateListener = (tabId: number) => {
+    if (timeupdateListeners.has(tabId)) {
+      return;
+    }
+
+    const video = document.querySelector<HTMLVideoElement>('video[src]');
+    if (video != null) {
+      const listener: (this: HTMLVideoElement) => void =
+        function onTimeupdate() {
+          sendResponse({
+            type: 'current-time',
+            currentTime: this.currentTime,
+            duration: this.duration,
+            tabId,
+          });
+        };
+      video.addEventListener('timeupdate', listener);
+      timeupdateListeners.set(tabId, listener);
+    }
+  };
+
+  const unregisterTimeupdateListener = (tabId: number) => {
+    const listener = timeupdateListeners.get(tabId);
+    if (listener) {
+      document
+        .querySelector<HTMLVideoElement>('video[src]')
+        ?.removeEventListener('timeupdate', listener);
+    }
+  };
+
   const onCache = async (tabId: number) => {
     const newModel = init();
     if (model.videoId !== newModel.videoId) {
       model = newModel;
+      unregisterTimeupdateListener(tabId);
     }
+    registerTimeupdateListener(tabId);
     if (model.state === 'with-video-id' && !(await getApiKey())) {
       sendErrorResponse('invalid-api-key', tabId);
       return;

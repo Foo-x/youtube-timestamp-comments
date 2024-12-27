@@ -8,12 +8,15 @@ import 'bulma/css/bulma.min.css';
 import React, { useContext, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  MemoryRouter as Router,
   Route,
+  MemoryRouter as Router,
   Routes,
   useNavigate,
 } from 'react-router-dom';
 import { getTheme } from 'src/modules/ChromeStorage';
+import CurrentTimeContextProvider, {
+  CurrentTimeDispatchContext,
+} from './contexts/CurrentTimeContext';
 import FetchedCommentsContextProvider, {
   FetchedCommentsDispatchContext,
 } from './contexts/FetchedCommentsContext';
@@ -31,6 +34,7 @@ import SelectedSecondsContextProvider from './contexts/SelectedSecondsContext';
 import TotalCountContextProvider, {
   TotalCountDispatchContext,
 } from './contexts/TotalCountContext';
+import { updateTheme } from './entities/Theme';
 import {
   contentTabId,
   initContentScript,
@@ -38,7 +42,6 @@ import {
 } from './modules/ChromeTabs';
 import ConfigPage from './pages/config';
 import MainPage from './pages/main';
-import { updateTheme } from './entities/Theme';
 
 type Props = unknown;
 
@@ -50,6 +53,7 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
   const navigate = useNavigate();
 
   const setTotalCount = useContext(TotalCountDispatchContext);
+  const setCurrentTime = useContext(CurrentTimeDispatchContext);
   const setFetchedComments = useContext(FetchedCommentsDispatchContext);
   const setIsLast = useContext(IsLastDispatchContext);
   const setIsProgress = useContext(IsProgressDispatchContext);
@@ -63,6 +67,13 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
         setFetchedComments(msg.data);
         setIsLast(msg.isLast);
         setIsProgress(false);
+        return;
+      }
+      if (msg.type === 'current-time' && msg.tabId === contentTabId) {
+        setCurrentTime({
+          currentTime: msg.currentTime,
+          duration: msg.duration,
+        });
         return;
       }
       if (msg.type === 'error' && msg.tabId === contentTabId) {
@@ -144,19 +155,21 @@ root.render(
   <React.StrictMode>
     <Router>
       <TotalCountContextProvider>
-        <FetchedCommentsContextProvider>
-          <IsLastContextProvider>
-            <IsProgressContextProvider>
-              <SelectedSecondsContextProvider>
-                <SelectedIdContextProvider>
-                  <IsApiKeyInvalidContextProvider>
-                    <PageAction />
-                  </IsApiKeyInvalidContextProvider>
-                </SelectedIdContextProvider>
-              </SelectedSecondsContextProvider>
-            </IsProgressContextProvider>
-          </IsLastContextProvider>
-        </FetchedCommentsContextProvider>
+        <CurrentTimeContextProvider>
+          <FetchedCommentsContextProvider>
+            <IsLastContextProvider>
+              <IsProgressContextProvider>
+                <SelectedSecondsContextProvider>
+                  <SelectedIdContextProvider>
+                    <IsApiKeyInvalidContextProvider>
+                      <PageAction />
+                    </IsApiKeyInvalidContextProvider>
+                  </SelectedIdContextProvider>
+                </SelectedSecondsContextProvider>
+              </IsProgressContextProvider>
+            </IsLastContextProvider>
+          </FetchedCommentsContextProvider>
+        </CurrentTimeContextProvider>
       </TotalCountContextProvider>
     </Router>
   </React.StrictMode>,

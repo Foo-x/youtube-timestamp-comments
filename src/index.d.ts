@@ -36,8 +36,13 @@ type ErrorToPA = WithTabId<{
   type: 'error';
   data: ErrorType;
 }>;
+type CurrentTimeToPA = WithTabId<{
+  type: 'current-time';
+  currentTime: number;
+  duration: number;
+}>;
 type HealthCheckToPA = WithTabId<{
   type: 'health-check';
   videoId: VideoId;
 }>;
-type MsgToPA = PageToPA | ErrorToPA | HealthCheckToPA;
+type MsgToPA = PageToPA | ErrorToPA | CurrentTimeToPA | HealthCheckToPA;
