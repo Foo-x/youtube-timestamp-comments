@@ -88,7 +88,11 @@ const useHooks: UseHooks<Props, HooksResult> = () => {
 
     const title = new URLSearchParams(window.location.search).get('title');
     if (title) {
-      document.title = title;
+      if (process.env.NODE_ENV === 'development') {
+        document.title = `(dev) ${title}`;
+      } else {
+        document.title = title;
+      }
     }
 
     void getTheme().then(updateTheme);
