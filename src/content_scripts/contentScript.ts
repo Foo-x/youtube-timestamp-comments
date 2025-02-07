@@ -16,7 +16,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
   };
   type LastPageLoaded = Common & {
     state: 'last-page-loaded';
-    fetchedSeconds: FetchedComments;
+    fetchedComments: FetchedComments;
     totalCount: number;
   };
   type WithPageToken = Omit<LastPageLoaded, 'state'> & {
@@ -46,7 +46,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     if (newModel.state === 'with-page-token') {
       sendResponse({
         type: 'page',
-        data: newModel.fetchedSeconds,
+        data: newModel.fetchedComments,
         totalCount: newModel.totalCount,
         isLast: false,
         tabId,
@@ -54,7 +54,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
     } else {
       sendResponse({
         type: 'page',
-        data: newModel.fetchedSeconds,
+        data: newModel.fetchedComments,
         totalCount: newModel.totalCount,
         isLast: true,
         tabId,
@@ -92,7 +92,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       model = {
         state: 'last-page-loaded',
         videoId: model.videoId,
-        fetchedSeconds: { comments: [], secondCommentIndexPairs: [] },
+        fetchedComments: { comments: [], secondCommentIndexPairs: [] },
         totalCount: 0,
         lock: model.lock,
       };
@@ -101,12 +101,12 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       sendErrorResponse(pageResult, tabId);
       return;
     }
-    const fetchedSeconds = createFetchedComments(pageResult.comments);
+    const fetchedComments = createFetchedComments(pageResult.comments);
     model = pageResult.pageToken
       ? {
           state: 'with-page-token',
           videoId: model.videoId,
-          fetchedSeconds,
+          fetchedComments,
           totalCount: pageResult.totalCount,
           pageToken: pageResult.pageToken,
           lock: model.lock,
@@ -114,7 +114,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
       : {
           state: 'last-page-loaded',
           videoId: model.videoId,
-          fetchedSeconds,
+          fetchedComments,
           totalCount: pageResult.totalCount,
           lock: model.lock,
         };
@@ -145,15 +145,15 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         sendErrorResponse(pageResult, tabId);
         return;
       }
-      const fetchedSeconds = createFetchedComments([
-        ...model.fetchedSeconds.comments,
+      const fetchedComments = createFetchedComments([
+        ...model.fetchedComments.comments,
         ...pageResult.comments,
       ]);
       model = pageResult.pageToken
         ? {
             state: 'with-page-token',
             videoId: model.videoId,
-            fetchedSeconds,
+            fetchedComments,
             totalCount: pageResult.totalCount,
             pageToken: pageResult.pageToken,
             lock: model.lock,
@@ -161,7 +161,7 @@ if (!chrome.runtime.onMessage.hasListeners()) {
         : {
             state: 'last-page-loaded',
             videoId: model.videoId,
-            fetchedSeconds,
+            fetchedComments,
             totalCount: pageResult.totalCount,
             lock: model.lock,
           };

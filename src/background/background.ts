@@ -20,6 +20,8 @@ chrome.runtime.onInstalled.addListener(() => {
 
 const tabIdToWindowId = new Map<number, number>();
 const windowIdToTabId = new Map<number, number>();
+
+// remove tab-window mapping on remove window
 chrome.windows.onRemoved.addListener((windowId) => {
   const tabId = windowIdToTabId.get(windowId);
   if (tabId != null) {
@@ -27,15 +29,19 @@ chrome.windows.onRemoved.addListener((windowId) => {
     tabIdToWindowId.delete(tabId);
   }
 });
+
 chrome.action.onClicked.addListener(async (tab) => {
   const tabId = tab.id!;
   const windowId = tabIdToWindowId.get(tabId);
+
+  // focus the window if already opened
   if (windowId) {
     await chrome.windows.update(windowId, {
       focused: true,
     });
     return;
   }
+
   const parentWindow = await chrome.windows.getCurrent();
   const extensionWindow = await chrome.windows.create({
     url: `${chrome.runtime.getURL('/html/page_action/page_action.html')}?${new URLSearchParams(

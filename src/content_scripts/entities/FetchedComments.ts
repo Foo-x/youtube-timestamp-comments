@@ -28,11 +28,11 @@ export const createFetchedComments = (comments: string[]): FetchedComments => {
     )
     .filter(([_, seconds]) => seconds.length > 0);
   const secondCommentIndexPairs = commentSecondsPairs
-    .map(([_, seconds], index) => {
+    .flatMap(([_, seconds], index) => {
       return seconds.map<[number, number]>((second) => [second, index]);
     })
-    .flat()
     .sort(([aSec, aIndex], [bSec, bIndex]) => {
+      // sort by second, if same second, sort by index
       return aSec - bSec || aIndex - bIndex;
     });
   return {
