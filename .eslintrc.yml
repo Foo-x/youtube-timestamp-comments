@@ -57,6 +57,10 @@ rules:
   '@typescript-eslint/consistent-type-definitions':
     - error
     - 'type'
+  import/no-extraneous-dependencies:
+    - error
+    - devDependencies:
+      - '**/*.test.ts'
 settings:
   import/resolver:
     typescript: {}

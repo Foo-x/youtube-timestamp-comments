@@ -3,3 +3,4 @@ dist
 elm-stuff
 .cache
 .parcel-cache
+coverage
