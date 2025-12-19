@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.12.0] - 2025-12-19
+
+### Changed
+
+- Update UI.
+
+### Fixed
+
+- Window size and position for some display managers.
+
+
 ## [v0.11.0] - 2024-10-12
 
 ### Added
@@ -85,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use YouTube Data API to fetch comments.
 
-[Unreleased]: https://github.com/Foo-x/youtube-timestamp-comments/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/Foo-x/youtube-timestamp-comments/compare/v0.12.0...HEAD
+[v0.11.0]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.12.0
 [v0.11.0]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.11.0
 [v0.10.0]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.10.0
 [v0.9.1]: https://github.com/Foo-x/youtube-timestamp-comments/releases/tag/v0.9.1
