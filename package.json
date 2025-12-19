@@ -34,8 +34,10 @@
     "@foo-x/react-tea": "^0.2.1",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "async-lock": "^1.4.1",
+    "baseline-browser-mapping": "^2.9.10",
     "bulma": "^1.0.2",
     "bulma-divider": "^0.2.0",
+    "caniuse-lite": "^1.0.30001761",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3"

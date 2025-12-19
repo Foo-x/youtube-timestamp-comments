@@ -37,22 +37,33 @@ chrome.action.onClicked.addListener(async (tab) => {
     return;
   }
   const parentWindow = await chrome.windows.getCurrent();
-  const extensionWindow = await chrome.windows.create({
-    url: `${chrome.runtime.getURL('/html/page_action/page_action.html')}?${new URLSearchParams(
-      {
-        tabId: tabId.toString(),
-        title: tab.title!,
-      },
-    ).toString()}`,
-    type: 'popup',
-    width: 400,
-    height: Math.max(parentWindow.height! - 50, 650),
-    top: parentWindow.top,
-    left:
-      parentWindow.left && parentWindow.width
-        ? parentWindow.left + parentWindow.width - 350
-        : undefined,
-  });
+  const createWindow = () => {
+    const commonData = {
+      url: `${chrome.runtime.getURL('/html/page_action/page_action.html')}?${new URLSearchParams(
+        {
+          tabId: tabId.toString(),
+          title: tab.title!,
+        },
+      ).toString()}`,
+      type: 'popup',
+    } satisfies chrome.windows.CreateData;
+    try {
+      return chrome.windows.create({
+        ...commonData,
+        width: 400,
+        height: Math.max(parentWindow.height! - 50, 650),
+        top: parentWindow.top,
+        left:
+          parentWindow.left && parentWindow.width
+            ? parentWindow.left + parentWindow.width - 350
+            : undefined,
+      });
+    } catch {
+      // w/o size and position for some display managers
+      return chrome.windows.create(commonData);
+    }
+  };
+  const extensionWindow = await createWindow();
   const newWindowId = extensionWindow.id!;
   tabIdToWindowId.set(tabId, newWindowId);
   windowIdToTabId.set(newWindowId, tabId);
