@@ -12,7 +12,7 @@ import {
   Route,
   Routes,
   useNavigate,
-} from 'react-router-dom';
+} from 'react-router';
 import { getTheme } from 'src/modules/ChromeStorage';
 import FetchedCommentsContextProvider, {
   FetchedCommentsDispatchContext,

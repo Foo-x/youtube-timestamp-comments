@@ -40,7 +40,7 @@
     "caniuse-lite": "^1.0.30001761",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3"
+    "react-router": "^7.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.3",

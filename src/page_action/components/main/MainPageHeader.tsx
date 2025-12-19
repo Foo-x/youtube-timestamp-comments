@@ -1,7 +1,7 @@
 import { Container, UseHooks, View } from '@foo-x/react-container';
 import { sendMessage } from 'pa/modules/ChromeTabs';
 import { memo, ReactElement, useCallback, useContext, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { IsLastStateContext } from 'src/page_action/contexts/IsLastContext';
 import {
   IsProgressDispatchContext,
